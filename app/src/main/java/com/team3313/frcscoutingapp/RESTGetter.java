@@ -117,10 +117,9 @@ public class RESTGetter {
                 writer.close();
 
                 out.close();
-
                 urlConnection.connect();
 
-
+System.out.println("RET3313: " + readStream(urlConnection.getInputStream()));
                 //String ret = urlConnection.getResponseCode() + " " + readStream(urlConnection.getInputStream());
                 String ret = "";
                 if (urlConnection.getResponseCode() == 201 || urlConnection.getResponseCode() == 200) {

@@ -77,13 +77,15 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String body = "{\"activationCode\": " + apiKey.getText().toString() + "}";
+                String body = "{\"activationCode\": \"" + apiKey.getText().toString() + "\"}";
+                System.out.println("BODY3313: " + body);
                 final RESTGetter.HttpsSubmitTask t = new RESTGetter.HttpsSubmitTask(DataStore.SERVER + "/api/device/register", body) {
 
                     @Override
                     protected void customEnd(String r) {
+                        System.out.println("RESPONSE3313: " + r);
                         try {
-                            System.out.println(r);
+                            System.err.println(r);
 
                             JSONObject response = new JSONObject(r);
                             DataStore.config.put("apiKey", response.get("token"));
@@ -91,7 +93,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                             Toast.makeText(getContext(), r, Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
 e.printStackTrace();
-                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), e.getMessage() + " " + r, Toast.LENGTH_SHORT).show();
                         }
                     }
                 };

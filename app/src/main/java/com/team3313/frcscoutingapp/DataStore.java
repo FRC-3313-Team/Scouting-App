@@ -357,7 +357,7 @@ public class DataStore {
                             System.out.println(r);
                         }
                     };
-                    t.execute("Authentication:" + config.getString("apiKey"));
+                    t.execute("device-token:" + config.getString("apiKey"));
                 }
             } catch (JSONException e) {
                 //item is missing the 'updated' tag
