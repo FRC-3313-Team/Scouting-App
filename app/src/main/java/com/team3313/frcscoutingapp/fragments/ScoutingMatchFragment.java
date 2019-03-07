@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.Space;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Spinner;
 
@@ -27,10 +30,12 @@ import org.json.JSONObject;
  */
 public class ScoutingMatchFragment extends ScoutingFragment {
 
-    public CheckBox autoMoveBox;
-    public CheckBox defenseBox;
-    public Spinner habStart;
-    public Spinner habEnd;
+    public CheckBox autoMoveBox, defenseBox;
+    public Spinner habStart, habEnd;
+    public NumberPicker
+            rocketTopCargo, rocketMidCargo, rocketBotCargo, podCargo,
+            rocketTopHatch, rocketMidHatch, rocketBotHatch, podHatch;
+
     LinearLayout linearLayout;
     LinearLayout buttonRow;
     // TODO: Rename and change types of parameters
@@ -93,10 +98,66 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         linearLayout.addView(autoRow);
 
         //teleop data
+        TableLayout teleopTable = new TableLayout(getContext());
+
+        //label row
+        TableRow rLabelRow = new TableRow(getContext());
+
+        TableRow.LayoutParams params = new TableRow.LayoutParams();
+        TextView cargoLabel = new TextView(getContext());
+        cargoLabel.setText("Cargo");
+        params = new TableRow.LayoutParams();
+        params.span = 2; //amount of columns you will span
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        cargoLabel.setLayoutParams(params);
+        rLabelRow.addView(cargoLabel);
+
+        rLabelRow.addView(new Space(getContext()));
+        TextView hatchLabel = new TextView(getContext());
+        hatchLabel.setText("Hatch");
+        params = new TableRow.LayoutParams();
+        params.span = 2; //amount of columns you will span
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        hatchLabel.setLayoutParams(params);
+        rLabelRow.addView(hatchLabel);
+
+        //top row
+        TableRow rTopRow = new TableRow(getContext());
+        rocketTopCargo = new NumberPicker(getContext(), null);
+        rTopRow.addView(rocketTopCargo);
+        rTopRow.addView(new Space(getContext()));
+        rTopRow.addView(new Space(getContext()));
+        rocketTopHatch = new NumberPicker(getContext(), null);
+        rTopRow.addView(new Space(getContext()));
+
+        teleopTable.addView(rTopRow);
+
+        //mid row
+        TableRow rMidRow = new TableRow(getContext());
+        rocketMidCargo = new NumberPicker(getContext(), null);
+        rMidRow.addView(rocketMidCargo);
+        rMidRow.addView(new Space(getContext()));
+        rMidRow.addView(new Space(getContext()));
+        rocketMidHatch = new NumberPicker(getContext(), null);
+        rMidRow.addView(new Space(getContext()));
+
+        teleopTable.addView(rMidRow);
+
+        //bot row
+        TableRow rBotRow = new TableRow(getContext());
+        rocketBotCargo = new NumberPicker(getContext(), null);
+        rBotRow.addView(rocketBotCargo);
+        podCargo = new NumberPicker(getContext(), null);
+        rBotRow.addView(podCargo);
+        rBotRow.addView(new Space(getContext()));
+        rocketBotHatch = new NumberPicker(getContext(), null);
+        podHatch = new NumberPicker(getContext(), null);
+        rBotRow.addView(podHatch);
+
+        teleopTable.addView(rBotRow);
 
 
-
-
+        linearLayout.addView(teleopTable);
 
         //endgame data
         LinearLayout endgameRow = new LinearLayout(getContext());
