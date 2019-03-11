@@ -56,7 +56,7 @@ public class TeamMatchesFragment extends TeamFragment {
         linearLayout.addView(buttonRow);
 
 
-        linearLayout.addView(new MatchList(getContext(), DataStore.searchTeamMatches(teamKey, MainActivity.instance.getActiveRegional())));
+        linearLayout.addView(new MatchList(getContext(), DataStore.searchTeamMatches(teamKey)));
         return linearLayout;
     }
 

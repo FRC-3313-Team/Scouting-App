@@ -21,6 +21,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,36 +33,22 @@ public class DataStore {
     /**
      * Match key, team key, match object
      */
-    public static Table<String, String, JSONObject> matchData = HashBasedTable.create();
+    public static HashMap<String, JSONObject> matchData = new HashMap();
+    // public static Table<String, String, JSONObject> matchData = HashBasedTable.create();
     public static String SERVER = "https://scout.tinybits.xyz";
-    public static JSONArray scheduleData = new JSONArray();
     public static JSONObject config = new JSONObject();
     public static JSONObject teamData = new JSONObject();
 
-    private static RESTGetter.HttpRequestTaskArray getTeamGetter() {
-        return new RESTGetter.HttpRequestTaskArray("http://www.team3313.com/regional/" + MainActivity.instance.getActiveRegional() + "/teams") {
+    private static RESTGetter.HttpsRequestTaskArray updateTeamData() throws JSONException {
+        return new RESTGetter.HttpsRequestTaskArray(SERVER + "/api/scout/teams", "{\"regional\":\"" + config.get("regional") + "\"}") {
             @Override
             protected void customEnd(JSONArray r) {
                 try {
-                    System.out.println("Teams.json was empty");
-                    final List<String> sort = new ArrayList<>();
+
                     for (int i = 0; i < r.length(); i++) {
-                        sort.add(r.getString(i));
-                    }
-                    Collections.sort(sort, new TeamNumberComparator());
-                    for (final String s : sort) {
-                        RESTGetter.HttpRequestTask team = null;
-                        team = new RESTGetter.HttpRequestTask("http://team3313.com/teams/" + s) {
-                            @Override
-                            protected void customEnd(JSONObject ret) {
-                                try {
-                                    teamData.put(s, ret);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        };
-                        team.execute("Authentication:" + config.getString("apiKey"));
+                        JSONObject team = r.getJSONObject(i);
+
+                        teamData.put(team.getString("team"), team);
                     }
                     writeToFile(teamData.toString(), "teams.json");
                 } catch (JSONException e) {
@@ -71,33 +58,15 @@ public class DataStore {
         };
     }
 
-    private static RESTGetter.HttpRequestTaskArray getScheduleGetter() {
-        return new RESTGetter.HttpRequestTaskArray("http://www.team3313.com/regional/" + MainActivity.instance.getActiveRegional() + "/schedule") {
+
+    private static RESTGetter.HttpsRequestTaskArray updateMatchData() throws JSONException {
+        return new RESTGetter.HttpsRequestTaskArray(SERVER + "/api/scout/matches", "{\"regional\":\"" + config.get("regional") + "\"}") {
             @Override
             protected void customEnd(JSONArray r) {
-                scheduleData = r;
-
-                try {
-                    scheduleData = sortJsonArray(scheduleData, "predicted_time");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                writeToFile(scheduleData.toString(), "regional-matches.json");
-            }
-        };
-    }
-
-    private static RESTGetter.HttpRequestTaskArray getMatchDataGetter() {
-        return new RESTGetter.HttpRequestTaskArray("http://www.team3313.com/regional/" + MainActivity.instance.getActiveRegional() + "/match_data") {
-            @Override
-            protected void customEnd(JSONArray r) {
-                System.out.println(r.toString());
                 for (int i = 0; i < r.length(); i++) {
-                    JSONObject item = null;
                     try {
-                        item = r.getJSONObject(i);
-                        item.remove("_id");
-                        matchData.put(item.getString("match_key"), item.getString("team_key"), item);
+                        JSONObject match = r.getJSONObject(i);
+                        matchData.put(match.getString("match"), match);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -118,17 +87,6 @@ public class DataStore {
         } else {
             config = new JSONObject();
         }
-        String matches = readFromFile("regional-matches.json");
-        if (!Objects.equals(matches, "")) {
-            try {
-                scheduleData = new JSONArray(matches);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                scheduleData = new JSONArray();
-            }
-        } else {
-            getScheduleGetter().execute();
-        }
         String teamString = readFromFile("teams.json");
         if (!Objects.equals(teamString, "")) {
             try {
@@ -137,22 +95,24 @@ public class DataStore {
                 teamData = new JSONObject();
                 e.printStackTrace();
             }
-        } else {
-            getTeamGetter().execute();
         }
         String matchString = readFromFile("match-data.json");
         if (!Objects.equals(matchString, "")) {
             try {
                 JSONArray data = new JSONArray(matchString);
+
                 for (int i = 0; i < data.length(); i++) {
-                    JSONObject item = data.getJSONObject(i);
-                    matchData.put(item.getString("match_key"), item.getString("team_key"), item);
+                    try {
+                        JSONObject match = data.getJSONObject(i);
+                        matchData.put(match.getString("match"), match);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        getMatchDataGetter().execute();
     }
 
     public static void manualRefresh() {
@@ -161,7 +121,7 @@ public class DataStore {
             @Override
             protected Void doInBackground(String... strings) {
                 try {
-                    uploadMatchData();
+                    uploadChanges();
                 } catch (Exception ex) {
                 }
                 return null;
@@ -169,63 +129,14 @@ public class DataStore {
 
             @Override
             protected void onPostExecute(Void v) {
-                new AsyncTask<String, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(String... strings) {
-                        try {
-                            uploadPitData();
-                        } catch (Exception ex) {
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void v) {
-                        new AsyncTask<String, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(String... strings) {
-                                getScheduleGetter().execute();
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void v) {
-
-                                new AsyncTask<String, Void, Void>() {
-                                    @Override
-                                    protected Void doInBackground(String... strings) {
-                                        getTeamGetter().execute();
-                                        return null;
-                                    }
-
-                                    @Override
-                                    protected void onPostExecute(Void v) {
-
-                                        new AsyncTask<String, Void, Void>() {
-                                            @Override
-                                            protected Void doInBackground(String... strings) {
-                                                getScheduleGetter().execute();
-                                                return null;
-                                            }
-
-                                            @Override
-                                            protected void onPostExecute(Void v) {
-                                                getMatchDataGetter().execute();
-                                            }
-                                        }.execute();
-                                    }
-                                }.execute();
-                            }
-                        }.execute();
-                    }
-                }.execute();
+                try {
+                    updateTeamData().execute("device-token:" + config.getString("apiKey"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
         }.execute();
-        try {
-            uploadPitData();
-        } catch (Exception ex) {
-        }
     }
 
     private static void writeToFile(String data, String filename) {
@@ -309,64 +220,42 @@ public class DataStore {
         return new JSONArray(jsons);
     }
 
-    public static JSONArray searchTeamMatches(String team, String regional) {
+    public static JSONArray searchTeamMatches(String team) {
         JSONArray results = new JSONArray();
-        System.out.println("Searching " + regional + " for " + team);
-        for (int i = 0; i < scheduleData.length(); i++) {
+        for (int i = 0; i < matchData.size(); i++) {
             try {
-                JSONObject item = scheduleData.getJSONObject(i);
-                if (item.getString("event_key").equalsIgnoreCase(regional)) {
-                    boolean present = false;
-                    JSONArray red = item.getJSONObject("alliances").getJSONObject("red").getJSONArray("team_keys");
-                    for (int j = 0; j < 3; j++) {
-                        if (red.getString(j).equalsIgnoreCase(team)) {
-                            present = true;
-                        }
-                    }
-                    JSONArray blue = item.getJSONObject("alliances").getJSONObject("blue").getJSONArray("team_keys");
-                    for (int j = 0; j < 3; j++) {
-                        if (blue.getString(j).equalsIgnoreCase(team)) {
-                            present = true;
-                        }
-                    }
-                    if (present) {
-                        results.put(item);
+                JSONObject match = matchData.get(i);
+                JSONArray teamData = match.getJSONArray("data");
+                for (int j = 0; j < teamData.length(); j++) {
+                    if (teamData.getJSONObject(j).getString("team").equals(team)) {
+                        results.put(match);
                     }
                 }
             } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 
         return results;
     }
 
-    public static void uploadMatchData() {
+    public static void uploadChanges() {
+        JSONArray toUpload = new JSONArray();
+
         for (final JSONObject item : matchData.values()) {
             try {
                 if (item.getBoolean("updated")) {
-                    JSONObject toUpload = new JSONObject(item.toString());
-                    toUpload.remove("updated");
-                    System.out.println("Attempting upload:" + toUpload.getString("match_key") + "/" + toUpload.getString("team_key"));
-                    final RESTGetter.HttpSubmitTask t = new RESTGetter.HttpSubmitTask("http://team3313.com/scouting/match/" + toUpload.getString("match_key") + "/" + toUpload.getString("team_key"), toUpload.toString()) {
-
-                        @Override
-                        protected void customEnd(String r) {
-                            if (!r.startsWith("fail")) {
-                                item.remove("updated");
-                            }
-                            System.out.println(r);
-                        }
-                    };
-                    t.execute("device-token:" + config.getString("apiKey"));
+                    JSONObject match = new JSONObject(item.toString());
+                    match.remove("updated");
+                    toUpload.put(match);
                 }
             } catch (JSONException e) {
                 //item is missing the 'updated' tag
             }
         }
-    }
 
-    public static void uploadPitData() {
-        JSONArray names = teamData.names();
+
+        final JSONArray names = teamData.names();
         for (int i = 0; i < names.length(); i++) {
             try {
                 if (teamData.getJSONObject(names.getString(i)).has("pit")) {
@@ -374,20 +263,9 @@ public class DataStore {
 
                     System.out.println("found pit data for " + names.getString(i) + ":" + pit.names());
                     if (pit.getBoolean("updated")) {
-                        JSONObject toUpload = new JSONObject(pit.toString());
-                        toUpload.remove("updated");
-                        System.out.println("Attempting upload: pit for " + names.getString(i));
-                        final RESTGetter.HttpSubmitTask t = new RESTGetter.HttpSubmitTask("http://team3313.com/scouting/pit/" + names.getString(i), toUpload.toString()) {
-
-                            @Override
-                            protected void customEnd(String r) {
-                                if (!r.startsWith("fail")) {
-                                    pit.remove("updated");
-                                }
-                                System.out.println(r);
-                            }
-                        };
-                        t.execute("Authentication:" + config.getString("apiKey"));
+                        JSONObject pitUpload = new JSONObject(pit.toString());
+                        pitUpload.remove("updated");
+                        toUpload.put(pitUpload);
                     }
                 }
             } catch (JSONException e) {
@@ -398,18 +276,44 @@ public class DataStore {
                 }
                 e.printStackTrace();
             }
-
-
         }
-        System.out.println("Pit Data " + names);
+
+        final RESTGetter.HttpsSubmitTask t = new RESTGetter.HttpsSubmitTask(SERVER + "/api/scout/upload", toUpload.toString()) {
+            @Override
+            protected void customEnd(String r) {
+
+                if (!r.startsWith("fail")) {
+                    for (final JSONObject item : matchData.values()) {
+                        try {
+                            if (item.getBoolean("updated")) {
+                                item.remove("updated");
+                            }
+                        } catch (JSONException e) {
+                            //item is missing the 'updated' tag
+                        }
+                    }
+
+                    for (int i = 0; i < names.length(); i++) {
+                        try {
+                            if (teamData.getJSONObject(names.getString(i)).has("pit")) {
+                                JSONObject pit = teamData.getJSONObject(names.getString(i)).getJSONObject("pit");
+                                if (pit.getBoolean("updated")) {
+                                    pit.remove("updated");
+                                }
+                            }
+                        } catch (JSONException e) {
+                            //item is missing the 'updated' tag
+                        }
+                    }
+                }
+            }
+        };
+        t.execute();
+
     }
 
     public static void autoSave() {
         System.out.println("Autosaving");
-        try {
-            writeToFile(scheduleData.toString(), "regional-matches.json");
-        } catch (Exception ex) {
-        }
         saveConfig();
         writeToFile(teamData.toString(), "teams.json");
         JSONArray saveMatches = new JSONArray();

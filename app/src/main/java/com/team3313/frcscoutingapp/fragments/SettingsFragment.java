@@ -78,21 +78,27 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             @Override
             public void onClick(View v) {
                 String body = "{\"activationCode\": \"" + apiKey.getText().toString() + "\"}";
-                System.out.println("BODY3313: " + body);
                 final RESTGetter.HttpsSubmitTask t = new RESTGetter.HttpsSubmitTask(DataStore.SERVER + "/api/device/register", body) {
 
                     @Override
                     protected void customEnd(String r) {
-                        System.out.println("RESPONSE3313: " + r);
                         try {
-                            System.err.println(r);
-
                             JSONObject response = new JSONObject(r);
                             DataStore.config.put("apiKey", response.get("token"));
                             DataStore.saveConfig();
                             Toast.makeText(getContext(), r, Toast.LENGTH_SHORT).show();
+                            new RESTGetter.HttpsRequestTask(DataStore.SERVER + "/api/device/status") {
+                                @Override
+                                protected void customEnd(JSONObject r) {
+                                    try {
+                                        DataStore.config.put("regional", r.get("regional"));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }.execute("device-token:" + DataStore.config.getString("apiKey"));
                         } catch (JSONException e) {
-e.printStackTrace();
+                            e.printStackTrace();
                             Toast.makeText(getContext(), e.getMessage() + " " + r, Toast.LENGTH_SHORT).show();
                         }
                     }

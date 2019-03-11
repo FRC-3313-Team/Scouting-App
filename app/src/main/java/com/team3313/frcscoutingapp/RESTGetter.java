@@ -83,7 +83,7 @@ public class RESTGetter {
         String urlString;
         String bodyString;
 
-        public HttpsSubmitTask(String url, String body) {
+        public HttpsSubmitTask(String url, String body) {/**/
             urlString = url;
             bodyString = body;
         }
@@ -119,7 +119,7 @@ public class RESTGetter {
                 out.close();
                 urlConnection.connect();
 
-System.out.println("RET3313: " + readStream(urlConnection.getInputStream()));
+                System.out.println("RET3313: " + readStream(urlConnection.getInputStream()));
                 //String ret = urlConnection.getResponseCode() + " " + readStream(urlConnection.getInputStream());
                 String ret = "";
                 if (urlConnection.getResponseCode() == 201 || urlConnection.getResponseCode() == 200) {
@@ -146,7 +146,7 @@ System.out.println("RET3313: " + readStream(urlConnection.getInputStream()));
     public abstract static class HttpsRequestTask extends AsyncTask<String, Void, JSONObject> {
         String urlString;
 
-        HttpsRequestTask(String url) {
+        public HttpsRequestTask(String url) {
             urlString = url;
         }
 
@@ -192,9 +192,15 @@ System.out.println("RET3313: " + readStream(urlConnection.getInputStream()));
 
     public abstract static class HttpsRequestTaskArray extends AsyncTask<String, Void, JSONArray> {
         String urlString;
+        String reqBody;
 
         public HttpsRequestTaskArray(String url) {
             urlString = url;
+        }
+
+        public HttpsRequestTaskArray(String url, String body) {
+            urlString = url;
+            reqBody = body;
         }
 
         @Override
@@ -209,6 +215,21 @@ System.out.println("RET3313: " + readStream(urlConnection.getInputStream()));
                     if (split.length == 2) {
                         connection.setRequestProperty(split[0], split[1]);
                     }
+                }
+                if (reqBody != null) {
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+                    OutputStream out = new BufferedOutputStream(connection.getOutputStream());
+
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+
+                    writer.write(reqBody);
+
+                    writer.flush();
+
+                    writer.close();
+
+                    out.close();
                 }
                 connection.connect();
 

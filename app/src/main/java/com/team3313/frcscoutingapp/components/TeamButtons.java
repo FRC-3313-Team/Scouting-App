@@ -115,7 +115,6 @@ public class TeamButtons extends LinearLayout {
                         pit.put("updated", true);
                         DataStore.teamData.getJSONObject(frag.teamKey).put("pit", pit);
                         System.out.println("Saving award data");
-                        DataStore.uploadPitData();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -163,7 +162,6 @@ public class TeamButtons extends LinearLayout {
                         pit.put("updated", true);
                         DataStore.teamData.getJSONObject(frag.teamKey).put("pit", pit);
                         System.out.println("Saving pit data");
-                        DataStore.uploadPitData();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

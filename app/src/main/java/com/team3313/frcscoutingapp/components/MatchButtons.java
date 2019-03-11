@@ -112,7 +112,6 @@ public class MatchButtons extends LinearLayout {
                     DataStore.updateTeamStats(fragment.data.getString("team_key"));
                 } catch (JSONException e) {
                 }
-                DataStore.uploadMatchData();
             }
         });
         addView(saveButton);
