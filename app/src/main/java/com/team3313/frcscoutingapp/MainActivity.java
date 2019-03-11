@@ -26,6 +26,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.team3313.frcscoutingapp.drawer.DataModel;
 import com.team3313.frcscoutingapp.drawer.DrawerItemCustomAdapter;
 import com.team3313.frcscoutingapp.fragments.RankingFragment;
@@ -33,6 +35,8 @@ import com.team3313.frcscoutingapp.fragments.ScheduleFragment;
 import com.team3313.frcscoutingapp.fragments.SettingsFragment;
 import com.team3313.frcscoutingapp.fragments.StartupFragment;
 import com.team3313.frcscoutingapp.fragments.TeamListFragment;
+
+import org.json.JSONException;
 
 public class MainActivity extends AppCompatActivity {
     public static String regional;
@@ -66,12 +70,13 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    public static RequestQueue myRequestQueue ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
+        myRequestQueue = Volley.newRequestQueue(this);
         setContentView(R.layout.activity_main);
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
@@ -250,7 +255,11 @@ public class MainActivity extends AppCompatActivity {
         if (humanReadable) {
             return "Great Northern Regional 2018";
         } else {
-            return "2018ndgf";
+            try {
+                return DataStore.config.getString("regional");
+            } catch (JSONException e) {
+                return "AIRROR";
+            }
         }
     }
 

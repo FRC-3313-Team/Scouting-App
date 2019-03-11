@@ -60,12 +60,12 @@ public class TeamNotesFragment extends TeamFragment {
         linearLayout.addView(buttonRow);
 
 
-        for (JSONObject item : DataStore.matchData.values()) {
+        for (JSONObject item : DataStore.matchTable.values()) {
             try {
-                if (item.getString("team_key").equalsIgnoreCase(teamKey)) {
+                if (item.getString("team").equalsIgnoreCase(teamKey)) {
                     if (item.getString("notes") != null && !item.getString("notes").equalsIgnoreCase("")) {
                         TextView label = new TextView(getContext());
-                        label.setText(item.getString("match_key").split("_")[1]);
+                        label.setText(item.getString("match").split("_")[1]);
                         label.setTypeface(null, Typeface.BOLD);
                         label.setTextSize(20);
                         linearLayout.addView(label);

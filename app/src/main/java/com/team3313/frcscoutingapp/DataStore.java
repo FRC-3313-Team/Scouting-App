@@ -33,8 +33,8 @@ public class DataStore {
     /**
      * Match key, team key, match object
      */
-    public static HashMap<String, JSONObject> matchData = new HashMap();
-    // public static Table<String, String, JSONObject> matchData = HashBasedTable.create();
+    //public static HashMap<String, JSONObject> matchData = new HashMap();
+    public static Table<String, String, JSONObject> matchTable = HashBasedTable.create();
     public static String SERVER = "https://scout.tinybits.xyz";
     public static JSONObject config = new JSONObject();
     public static JSONObject teamData = new JSONObject();
@@ -66,7 +66,12 @@ public class DataStore {
                 for (int i = 0; i < r.length(); i++) {
                     try {
                         JSONObject match = r.getJSONObject(i);
-                        matchData.put(match.getString("match"), match);
+                        JSONArray teams = match.getJSONArray("data");
+                        for (int j = 0; j < teams.length(); j++) {
+                            JSONObject data = teams.getJSONObject(j);
+                            data.put("match", match.getString("match"));
+                            matchTable.put(match.getString("match"), teams.getJSONObject(j).getString("position"), data);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -104,7 +109,10 @@ public class DataStore {
                 for (int i = 0; i < data.length(); i++) {
                     try {
                         JSONObject match = data.getJSONObject(i);
-                        matchData.put(match.getString("match"), match);
+                        JSONArray teams = match.getJSONArray("data");
+                        for (int j = 0; j < teams.length(); j++) {
+                            matchTable.put(match.getString("match"), teams.getJSONObject(j).getString("position"), teams.getJSONObject(j));
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -220,33 +228,35 @@ public class DataStore {
         return new JSONArray(jsons);
     }
 
-    public static JSONArray searchTeamMatches(String team) {
-        JSONArray results = new JSONArray();
-        for (int i = 0; i < matchData.size(); i++) {
-            try {
-                JSONObject match = matchData.get(i);
-                JSONArray teamData = match.getJSONArray("data");
-                for (int j = 0; j < teamData.length(); j++) {
-                    if (teamData.getJSONObject(j).getString("team").equals(team)) {
-                        results.put(match);
+    public static ArrayList searchTeamMatches(String team) {
+        ArrayList<String> ret = new ArrayList();
+        for (String match : matchTable.rowKeySet()) {
+            for (String pos : matchTable.columnKeySet()) {
+                try {
+                    if (matchTable.get(match, pos).getString("team").equals(team)) {
+                        ret.add(match);
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
 
-        return results;
+        return ret;
     }
 
     public static void uploadChanges() {
         JSONArray toUpload = new JSONArray();
 
-        for (final JSONObject item : matchData.values()) {
+        for (final JSONObject item : matchTable.values()) {
             try {
                 if (item.getBoolean("updated")) {
                     JSONObject match = new JSONObject(item.toString());
                     match.remove("updated");
+                    match.remove("scouted");
+                    match.remove("position");
+                    match.put("type", "match");
+                    match.put("regional", config.getString("regional"));
                     toUpload.put(match);
                 }
             } catch (JSONException e) {
@@ -283,7 +293,8 @@ public class DataStore {
             protected void customEnd(String r) {
 
                 if (!r.startsWith("fail")) {
-                    for (final JSONObject item : matchData.values()) {
+
+                    for (final JSONObject item : matchTable.values()) {
                         try {
                             if (item.getBoolean("updated")) {
                                 item.remove("updated");
@@ -317,14 +328,28 @@ public class DataStore {
         saveConfig();
         writeToFile(teamData.toString(), "teams.json");
         JSONArray saveMatches = new JSONArray();
-        for (JSONObject item : matchData.values()) {
-            saveMatches.put(item);
+
+        for (String key : matchTable.rowKeySet()) {
+            try {
+                JSONObject match = new JSONObject();
+                match.put("match", match.getString("match"));
+                JSONArray data = new JSONArray();
+                for (String position : matchTable.columnKeySet()) {
+                    data.put(matchTable.get(key, position));
+                }
+                match.put("data", data);
+                saveMatches.put(match);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         writeToFile(saveMatches.toString(), "match-data.json");
 
     }
 
     public static void updateTeamStats(String teamKey) {
+        //TODO calculation for team stats
+        /*
         System.out.println("Updating stats for " + teamKey);
         try {
             JSONObject teamObject = teamData.getJSONObject(teamKey);
@@ -377,7 +402,7 @@ public class DataStore {
             teamObject.put("autoSwitch", autoSwitch / played);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private static class TeamNumberComparator implements Comparator<String> {

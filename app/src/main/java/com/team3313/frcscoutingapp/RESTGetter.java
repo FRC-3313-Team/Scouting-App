@@ -7,11 +7,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
@@ -83,7 +87,7 @@ public class RESTGetter {
         String urlString;
         String bodyString;
 
-        public HttpsSubmitTask(String url, String body) {/**/
+        public HttpsSubmitTask(String url, String body) {
             urlString = url;
             bodyString = body;
         }
@@ -91,44 +95,29 @@ public class RESTGetter {
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.e("MainActivity", bodyString);
+                String result = "";
 
 
                 URL url = new URL(urlString);
+                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                conn.setRequestProperty("Accept","application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+                os.writeBytes(bodyString);
 
-                HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+                os.flush();
+                os.close();
 
-                for (String param : params) {
-                    String[] split = param.split(":");
-                    if (split.length == 2) {
-                        urlConnection.setRequestProperty(split[0], split[1]);
-                    }
-                }
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true);
-                urlConnection.setDoInput(true);
-                OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
+                Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+                Log.i("MSG" , conn.getResponseMessage());
 
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-
-                writer.write(bodyString);
-
-                writer.flush();
-
-                writer.close();
-
-                out.close();
-                urlConnection.connect();
-
-                System.out.println("RET3313: " + readStream(urlConnection.getInputStream()));
-                //String ret = urlConnection.getResponseCode() + " " + readStream(urlConnection.getInputStream());
-                String ret = "";
-                if (urlConnection.getResponseCode() == 201 || urlConnection.getResponseCode() == 200) {
-                    ret = readStream(urlConnection.getInputStream());
-                } else if (urlConnection.getResponseCode() == 209) {
-                    ret = urlConnection.getResponseMessage();
-                }
-                return ret;
-
+                conn.disconnect();
+return conn.getResponseMessage();
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
                 return "fail: " + e.getMessage();

@@ -16,7 +16,6 @@ import com.team3313.frcscoutingapp.fragments.TeamDataFragment;
 import com.team3313.frcscoutingapp.fragments.TeamFragment;
 import com.team3313.frcscoutingapp.fragments.TeamMatchesFragment;
 import com.team3313.frcscoutingapp.fragments.TeamNotesFragment;
-import com.team3313.frcscoutingapp.fragments.TeamPR2Fragment;
 import com.team3313.frcscoutingapp.fragments.TeamPRFragment;
 
 import org.json.JSONArray;
@@ -131,52 +130,5 @@ public class TeamButtons extends LinearLayout {
             });
         }
         addView(prButton);
-
-
-        Button pr2Button = new Button(getContext());
-        pr2Button.setText("Robot Strategy");
-        if (fragment instanceof TeamPR2Fragment) {
-            pr2Button.setEnabled(false);
-            Button saveButton = new Button(getContext());
-            saveButton.setText("Save PR2 Data");
-            saveButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TeamPR2Fragment frag = (TeamPR2Fragment) fragment;
-                    try {
-                        JSONObject pit = new JSONObject();
-                        try {
-                            pit = DataStore.teamData.getJSONObject(frag.teamKey).getJSONObject("pit");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        JSONObject strategy = new JSONObject();
-
-                        strategy.put("auton", frag.auton.getText());
-                        strategy.put("climb", frag.climbing.getText());
-                        strategy.put("intake", frag.cubeIntake.getText());
-                        strategy.put("score", frag.cubeScore.getText());
-                        strategy.put("strategy", frag.gameStrategy.getText());
-
-                        pit.put("2018game", strategy);
-                        pit.put("updated", true);
-                        DataStore.teamData.getJSONObject(frag.teamKey).put("pit", pit);
-                        System.out.println("Saving pit data");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            addView(saveButton);
-        } else {
-            pr2Button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FragmentManager fragmentManager = MainActivity.instance.getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, TeamPR2Fragment.newInstance(fragment.teamKey)).commit();
-                }
-            });
-        }
-        addView(pr2Button);
     }
 }

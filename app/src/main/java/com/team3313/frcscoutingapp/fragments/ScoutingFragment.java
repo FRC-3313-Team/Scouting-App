@@ -31,7 +31,7 @@ public class ScoutingFragment extends Fragment {
     public void saveData() {
         try {
             data.put("updated", true);
-            DataStore.matchData.put(data.getString("match_key"), data.getString("team_key"), data);
+            DataStore.matchTable.put(data.getString("match"), data.getString("position"), data);
         } catch (JSONException e) {
             e.printStackTrace();
         }

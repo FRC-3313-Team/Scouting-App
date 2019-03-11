@@ -42,9 +42,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 1:
                 try {
-                    String team = match.getJSONObject("alliances").getJSONObject("red").getJSONArray("team_keys").getString(0);
+                    String team = DataStore.matchTable.get(match.getString("key"),"r1").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchData.get(match.getString("key"), team) != null) {
+                    if (DataStore.matchTable.get(match.getString("key"),"r1").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -53,9 +53,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 2:
                 try {
-                    String team = match.getJSONObject("alliances").getJSONObject("red").getJSONArray("team_keys").getString(1);
+                    String team = DataStore.matchTable.get(match.getString("key"),"r2").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchData.get(match.getString("key"), team) != null) {
+                    if (DataStore.matchTable.get(match.getString("key"),"r2").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -64,9 +64,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 3:
                 try {
-                    String team = match.getJSONObject("alliances").getJSONObject("red").getJSONArray("team_keys").getString(2);
+                    String team = DataStore.matchTable.get(match.getString("key"),"r3").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchData.get(match.getString("key"), team) != null) {
+                    if (DataStore.matchTable.get(match.getString("key"),"r3").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -75,9 +75,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 4:
                 try {
-                    String team = match.getJSONObject("alliances").getJSONObject("blue").getJSONArray("team_keys").getString(0);
+                    String team = DataStore.matchTable.get(match.getString("key"),"b1").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchData.get(match.getString("key"), team) != null) {
+                    if (DataStore.matchTable.get(match.getString("key"),"b1").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -86,9 +86,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 5:
                 try {
-                    String team = match.getJSONObject("alliances").getJSONObject("blue").getJSONArray("team_keys").getString(1);
+                    String team = DataStore.matchTable.get(match.getString("key"),"b2").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchData.get(match.getString("key"), team) != null) {
+                    if (DataStore.matchTable.get(match.getString("key"),"b2").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -97,9 +97,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 6:
                 try {
-                    String team = match.getJSONObject("alliances").getJSONObject("blue").getJSONArray("team_keys").getString(2);
+                    String team = DataStore.matchTable.get(match.getString("key"),"b2").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchData.get(match.getString("key"), team) != null) {
+                    if (DataStore.matchTable.get(match.getString("key"),"b2").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -113,31 +113,28 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
             public void onClick(View v) {
                 JSONObject start = null;
                 try {
-                    String team = "";
+                    String pos = "";
                     switch (DataStore.config.getInt("station")) {
                         case 0:
-                            team = match.getJSONObject("alliances").getJSONObject("red").getJSONArray("team_keys").getString(0);
+                            pos ="r1";
                             break;
                         case 1:
-                            team = match.getJSONObject("alliances").getJSONObject("red").getJSONArray("team_keys").getString(1);
+                            pos ="r2";
                             break;
                         case 2:
-                            team = match.getJSONObject("alliances").getJSONObject("red").getJSONArray("team_keys").getString(2);
+                            pos ="r3";
                             break;
                         case 3:
-                            team = match.getJSONObject("alliances").getJSONObject("blue").getJSONArray("team_keys").getString(0);
+                            pos ="b1";
                             break;
                         case 4:
-                            team = match.getJSONObject("alliances").getJSONObject("blue").getJSONArray("team_keys").getString(1);
+                            pos ="b2";
                             break;
                         case 5:
-                            team = match.getJSONObject("alliances").getJSONObject("blue").getJSONArray("team_keys").getString(2);
+                            pos ="b3";
                             break;
                     }
-                    start = DataStore.matchData.get(match.getString("key"), team);
-                    if (start == null) {
-                        start = new JSONObject("{\"match_key\":\"" + match.getString("key") + "\",\"team_key\":\"" + team + "\",\"auto\":{\"passedLine\":false,\"switch\":false,\"scale\":false},\"tele\":{\"switch\":0,\"scale\":0,\"exchange\":0,\"climb\":false},\"notes\":\"\"}");
-                    }
+                    start = DataStore.matchTable.get(match.getString("key"), pos);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

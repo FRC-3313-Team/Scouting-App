@@ -16,6 +16,8 @@ import com.team3313.frcscoutingapp.DataStore;
 import com.team3313.frcscoutingapp.MainActivity;
 import com.team3313.frcscoutingapp.components.MatchList;
 
+import java.util.ArrayList;
+
 public class ScheduleFragment extends Fragment {
 
     public ScheduleFragment() {
@@ -23,8 +25,8 @@ public class ScheduleFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle("Schedule for " + ((MainActivity) getActivity()).getActiveRegional(true));
-        return new MatchList(getContext(), DataStore.scheduleData);
+        getActivity().setTitle("Schedule for " + ((MainActivity) getActivity()).getActiveRegional(false));
+        return new MatchList(getContext(), new ArrayList(DataStore.matchTable.rowKeySet()));
     }
 
     /*

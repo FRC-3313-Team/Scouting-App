@@ -6,6 +6,8 @@ package com.team3313.frcscoutingapp.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.ArrayMap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +22,27 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.team3313.frcscoutingapp.DataStore;
+import com.team3313.frcscoutingapp.MainActivity;
 import com.team3313.frcscoutingapp.R;
 import com.team3313.frcscoutingapp.RESTGetter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Map;
 
 
 public class SettingsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
@@ -77,33 +94,54 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String body = "{\"activationCode\": \"" + apiKey.getText().toString() + "\"}";
-                final RESTGetter.HttpsSubmitTask t = new RESTGetter.HttpsSubmitTask(DataStore.SERVER + "/api/device/register", body) {
-
+                JSONObject body = null;
+                try {
+                    body = new JSONObject("{\"activationCode\": \"" + apiKey.getText().toString() + "\"}");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST,
+                        DataStore.SERVER + "/api/device/register",
+                        body, new Response.Listener<JSONObject>() {
                     @Override
-                    protected void customEnd(String r) {
+                    public void onResponse(JSONObject response) {
+
                         try {
-                            JSONObject response = new JSONObject(r);
                             DataStore.config.put("apiKey", response.get("token"));
                             DataStore.saveConfig();
-                            Toast.makeText(getContext(), r, Toast.LENGTH_SHORT).show();
-                            new RESTGetter.HttpsRequestTask(DataStore.SERVER + "/api/device/status") {
-                                @Override
-                                protected void customEnd(JSONObject r) {
+                            Toast.makeText(getContext(), response.toString(), Toast.LENGTH_SHORT).show();
+
+
+                            JsonObjectRequest statusRequest = new JsonObjectRequest
+                                    (Request.Method.GET, DataStore.SERVER + "/api/device/status", null, new Response.Listener<JSONObject>() {
+
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            try {
+                                                DataStore.config.put("regional", response.get("regional"));
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }, null) {
+                                public Map<String, String> getHeaders() {
+
+                                    Map<String, String> mHeaders = new ArrayMap<String, String>();
                                     try {
-                                        DataStore.config.put("regional", r.get("regional"));
+                                        mHeaders.put("device-token", DataStore.config.getString("apiKey"));
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+                                    return mHeaders;
                                 }
-                            }.execute("device-token:" + DataStore.config.getString("apiKey"));
+                            };
+                            MainActivity.myRequestQueue.add(statusRequest);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(getContext(), e.getMessage() + " " + r, Toast.LENGTH_SHORT).show();
                         }
                     }
-                };
-                t.execute();
+                }, null);
+                MainActivity.myRequestQueue.add(registerRequest);
             }
         });
         saveRow.addView(saveButton);

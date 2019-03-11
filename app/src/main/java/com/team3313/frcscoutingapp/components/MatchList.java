@@ -11,6 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import de.codecrafters.tableview.SortableTableView;
 import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter;
 import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
@@ -21,13 +23,13 @@ import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
 
 public class MatchList extends LinearLayout {
     private static final String[] TABLE_HEADERS = {"Match ID", "Red 1", "Red 2", "Red 3", "Blue 1", "Blue 2", "Blue 3"};
-    JSONArray matchList;
+    ArrayList<String> matches = new ArrayList();
     SortableTableView<JSONObject> table;
 
-    public MatchList(Context context, JSONArray list) {
+    public MatchList(Context context, ArrayList list) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
-        matchList = list;
+        matches = list;
         View matches = createMatches();
         addView(matches);
     }
@@ -39,16 +41,18 @@ public class MatchList extends LinearLayout {
         table.setHeaderBackgroundColor(getResources().getColor(R.color.colorAccent));
 
 
-        JSONObject[] matches = new JSONObject[matchList.length()];
-        for (int i = 0; i < matchList.length(); i++) {
+        JSONObject[] matchJson = new JSONObject[matches.size()];
+        for (int i = 0; i < matches.size(); i++) {
             try {
-                matches[i] = matchList.getJSONObject(i);
+                JSONObject match = new JSONObject();
+                match.put("key", matches.get(i));
+                matchJson[i] = match;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
-        table.setDataAdapter(new MatchListTableDataAdapter(getContext(), matches));
+        table.setDataAdapter(new MatchListTableDataAdapter(getContext(), matchJson));
 
         table.setDataRowBackgroundProvider(TableDataRowBackgroundProviders.alternatingRowColors(getResources().getColor(R.color.colorAltRow), Color.WHITE));
         return table;
