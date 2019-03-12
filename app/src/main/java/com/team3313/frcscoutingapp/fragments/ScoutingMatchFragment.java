@@ -39,7 +39,6 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
     LinearLayout linearLayout;
     LinearLayout buttonRow;
-    // TODO: Rename and change types of parameters
 
     /**
      * Use this factory method to create a new instance of
@@ -62,7 +61,6 @@ public class ScoutingMatchFragment extends ScoutingFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.e("Airror", data.toString());
         MainActivity.instance.setTitle(getData("match", String.class).replace("qm", "Qualifier Match ") + " - Watching Team " + getData("team", String.class).substring(3));
         linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -97,25 +95,13 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         GridLayout grid = new GridLayout(getContext());
 
         //label row
-
-        TableRow.LayoutParams params = new TableRow.LayoutParams();
-        params.span = 2; //amount of columns you will span
-        params.gravity = Gravity.CENTER_HORIZONTAL;
-        params.height = TableRow.LayoutParams.WRAP_CONTENT;
-        params.width = TableRow.LayoutParams.WRAP_CONTENT;
-
-        TableRow.LayoutParams pickParam = new TableRow.LayoutParams();
-        pickParam.width = TableRow.LayoutParams.WRAP_CONTENT;
-        pickParam.height = TableRow.LayoutParams.WRAP_CONTENT;
-
-
         TextView cargoLabel = new TextView(getContext());
 
         cargoLabel.setText("Cargo");
         cargoLabel.setTextSize(25);
         GridLayout.LayoutParams gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(0, 1, GridLayout.CENTER),
-                GridLayout.spec(0, 1));
+                GridLayout.spec(0, 2, GridLayout.CENTER));
         grid.addView(cargoLabel, gridParams);
 
         TextView hatchLabel = new TextView(getContext());
@@ -123,51 +109,51 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         hatchLabel.setTextSize(25);
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(0, 1, GridLayout.CENTER),
-                GridLayout.spec(3, 1));
+                GridLayout.spec(3, 2, GridLayout.CENTER));
         grid.addView(hatchLabel, gridParams);
 
         //top row
-        rocketTopCargo = new NumberPicker(getContext(), null);
+        rocketTopCargo = new NumberPicker(getContext());
         rocketTopCargo.setOrientation(LinearLayout.HORIZONTAL);
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(1, 1, GridLayout.CENTER),
                 GridLayout.spec(0, 1));
         grid.addView(rocketTopCargo, gridParams);
-        rocketTopHatch = new NumberPicker(getContext(), null);
+        rocketTopHatch = new NumberPicker(getContext());
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(1, 1, GridLayout.CENTER),
                 GridLayout.spec(3, 1));
         grid.addView(rocketTopHatch, gridParams);
 
         //mid row
-        rocketMidCargo = new NumberPicker(getContext(), null);
+        rocketMidCargo = new NumberPicker(getContext());
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(2, 1, GridLayout.CENTER),
                 GridLayout.spec(0, 1));
         grid.addView(rocketMidCargo, gridParams);
-        rocketMidHatch = new NumberPicker(getContext(), null);
+        rocketMidHatch = new NumberPicker(getContext());
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(2, 1, GridLayout.CENTER),
                 GridLayout.spec(3, 1));
         grid.addView(rocketMidHatch, gridParams);
 
         //bot row
-        rocketBotCargo = new NumberPicker(getContext(), null);
+        rocketBotCargo = new NumberPicker(getContext());
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(3, 1, GridLayout.CENTER),
                 GridLayout.spec(0, 1));
         grid.addView(rocketBotCargo, gridParams);
-        podCargo = new NumberPicker(getContext(), null);
+        podCargo = new NumberPicker(getContext());
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(3, 1, GridLayout.CENTER),
                 GridLayout.spec(1, 1));
         grid.addView(podCargo, gridParams);
-        rocketBotHatch = new NumberPicker(getContext(), null);
+        rocketBotHatch = new NumberPicker(getContext());
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(3, 1, GridLayout.CENTER),
                 GridLayout.spec(3, 1));
         grid.addView(rocketBotHatch, gridParams);
-        podHatch = new NumberPicker(getContext(), null);
+        podHatch = new NumberPicker(getContext());
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(3, 1, GridLayout.CENTER),
                 GridLayout.spec(4, 1));

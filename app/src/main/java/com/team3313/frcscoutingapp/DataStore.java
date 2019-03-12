@@ -177,6 +177,8 @@ public class DataStore {
                                             JSONArray teams = match.getJSONArray("data");
                                             for (int j = 0; j < teams.length(); j++) {
                                                 JSONObject data = teams.getJSONObject(j);
+                                                if (data.getBoolean("scouted"))
+                                                    Log.i("AIRROR", "Found scouted match: " + match.getString("match") + " for " + data.getString("team"));
                                                 data.put("match", match.getString("match"));
                                                 matchTable.put(match.getString("match"), teams.getJSONObject(j).getString("position"), data);
                                             }
@@ -422,61 +424,86 @@ public class DataStore {
     }
 
     public static void updateTeamStats(String teamKey) {
-        //TODO calculation for team stats
-        /*
+        //TODO calculation for team stats changes every year
+
         System.out.println("Updating stats for " + teamKey);
         try {
-            JSONObject teamObject = teamData.getJSONObject(teamKey);
+            JSONObject teamStats = new JSONObject();
 
-            double scale = 0;
-            double swth = 0;
-            double exchange = 0;
-            int climb = 0;
-            int cross = 0;
-            int autoScale = 0;
-            int autoSwitch = 0;
+            double autoH = 0;
+            double autoC = 0;
+            double autoM = 0;
+            double def = 0;
+            double rct = 0;
+            double rcm = 0;
+            double rcb = 0;
+            double rht = 0;
+            double rhm = 0;
+            double rhb = 0;
+            double ph = 0;
+            double pc = 0;
+            double habs = 0;
+            double habe = 0;
             double played = 0;
-            for (JSONObject match : matchData.values()) {
-                if (match.getString("team_key").equalsIgnoreCase(teamKey)) {
+            for (JSONObject match : matchTable.values()) {
+                if (match.getString("team").equalsIgnoreCase(teamKey)) {
+                    if (match.getBoolean("scouted"))
+                        played++;
+                    JSONObject data = match.getJSONObject("data");
+                    JSONObject auto = data.getJSONObject("auto");
+                    JSONObject hab = data.getJSONObject("habitat");
+                    JSONObject rocket = data.getJSONObject("rocket");
+                    JSONObject pod = data.getJSONObject("pod");
 
-                    System.out.println(match.toString());
-                    played++;
-                    JSONObject auto = match.getJSONObject("auto");
-                    JSONObject tele = match.getJSONObject("tele");
+                    if (auto.getBoolean("hatch")) {
+                        autoH++;
+                    }
+                    if (auto.getBoolean("cargo")) {
+                        autoC++;
+                    }
+                    if (auto.getBoolean("movement")) {
+                        autoM++;
+                    }
+                    if (data.getBoolean("defense")) {
+                        def++;
+                    }
+                    rct += rocket.getJSONArray("cargo").getInt(0);
+                    rcm += rocket.getJSONArray("cargo").getInt(1);
+                    rcb += rocket.getJSONArray("cargo").getInt(2);
+                    rht += rocket.getJSONArray("hatch").getInt(0);
+                    rhm += rocket.getJSONArray("hatch").getInt(1);
+                    rhb += rocket.getJSONArray("hatch").getInt(2);
 
-                    if (auto.getBoolean("passedLine")) {
-                        cross++;
-                    }
-                    if (auto.getBoolean("switch")) {
-                        autoSwitch++;
-                    }
-                    if (auto.getBoolean("scale")) {
-                        autoScale++;
-                    }
-                    if (tele.getBoolean("climb")) {
-                        climb++;
-                    }
-                    scale += tele.getInt("scale");
-                    swth += tele.getInt("switch");
-                    exchange += tele.getInt("exchange");
+                    ph += pod.getInt("hatch");
+                    pc += pod.getInt("cargo");
+
+                    habs += hab.getInt("start");
+                    habe += hab.getInt("end");
                 }
             }
-            teamObject.put("played", played);
+            teamStats.put("Played Matches", played);
             if (played == 0) {
                 played = 1;// this is for /0 errors
             }
-            teamObject.put("scale", scale / played);
-            teamObject.put("switch", swth / played);
-            teamObject.put("exchange", exchange / played);
+            teamStats.put("Auto Hatch %", autoH / played);
+            teamStats.put("Auto Cargo %", autoC / played);
+            teamStats.put("Auto Movement %", autoM / played);
+            teamStats.put("Average Rct. Cargo Top", rct / played);
+            teamStats.put("Average Rct. Cargo Mid", rcm / played);
+            teamStats.put("Average Rct. Cargo Bot", rcb / played);
+            teamStats.put("Average Pod Cargo", pc / played);
+            teamStats.put("Average Rct. Hatch Top", rht / played);
+            teamStats.put("Average Rct. Hatch Mid", rhm / played);
+            teamStats.put("Average Rct. Hatch Bot", rhb / played);
+            teamStats.put("Average Pod Hatches", ph / played);
+            teamStats.put("Average Hab Start", habs / played);
+            teamStats.put("Average Hab End", habe / played);
+            teamStats.put("Defensive Games %", def / played);
 
-
-            teamObject.put("climb", climb / played);
-            teamObject.put("cross", cross / played);
-            teamObject.put("autoScale", autoScale / played);
-            teamObject.put("autoSwitch", autoSwitch / played);
+            teamData.getJSONObject(teamKey).put("stats", teamStats);
         } catch (JSONException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     private static class TeamNumberComparator implements Comparator<String> {

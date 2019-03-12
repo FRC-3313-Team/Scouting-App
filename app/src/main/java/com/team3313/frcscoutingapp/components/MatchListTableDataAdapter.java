@@ -136,6 +136,7 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                             break;
                     }
                     start = DataStore.matchTable.get(match.getString("key"), pos);
+                    Log.i("AIRROR",start.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

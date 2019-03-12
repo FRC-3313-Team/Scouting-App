@@ -21,7 +21,6 @@ public class ScoutingFragment extends Fragment {
      *
      * @return A new instance of fragment ScoutingNotesFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ScoutingFragment newInstance(JSONObject start) {
         ScoutingFragment fragment = new ScoutingFragment();
         fragment.data = start;

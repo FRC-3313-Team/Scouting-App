@@ -1,16 +1,11 @@
 package com.team3313.frcscoutingapp.components;
 
 import android.content.Context;
-import android.os.Handler;
-import android.text.InputType;
-import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /*
  * Copyright (c) 2010, Jeffrey F. Cole
@@ -44,178 +39,51 @@ import android.widget.LinearLayout;
  */
 public class NumberPicker extends LinearLayout {
 
-    private final long REPEAT_DELAY = 50;
+    Button dec, inc;
+    TextView display;
+    Integer value;
 
-    private final int ELEMENT_HEIGHT = 60;
-    private final int ELEMENT_WIDTH = ELEMENT_HEIGHT;
+    public NumberPicker(Context context) {
+        super(context);
+        this.setOrientation(LinearLayout.HORIZONTAL);
+        value = 0;
 
-    private final int MINIMUM = 0;
-    private final int MAXIMUM = 999;
-
-    private final int TEXT_SIZE = 30;
-
-    public Integer value;
-
-    Button decrement;
-    Button increment;
-    public EditText valueText;
-
-    private Handler repeatUpdateHandler = new Handler();
-
-    private boolean autoIncrement = false;
-    private boolean autoDecrement = false;
-
-    class RepetetiveUpdater implements Runnable {
-        public void run() {
-            if (autoIncrement) {
-                increment();
-                repeatUpdateHandler.postDelayed(new RepetetiveUpdater(), REPEAT_DELAY);
-            } else if (autoDecrement) {
-                decrement();
-                repeatUpdateHandler.postDelayed(new RepetetiveUpdater(), REPEAT_DELAY);
-            }
-        }
-    }
-
-    public NumberPicker(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
-
-        this.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        LayoutParams elementParams = new LinearLayout.LayoutParams(ELEMENT_HEIGHT, ELEMENT_WIDTH);
-        initDecrementButton(context);
-        initValueEditText(context);
-        initIncrementButton(context);
-        if (getOrientation() == VERTICAL) {
-            addView(increment, elementParams);
-            addView(valueText, elementParams);
-            addView(decrement, elementParams);
-        } else {
-            addView(decrement, elementParams);
-            addView(valueText, elementParams);
-            addView(increment, elementParams);
-        }
-    }
-
-    private void initIncrementButton(Context context) {
-        increment = new Button(context);
-        increment.setTextSize(TEXT_SIZE);
-        increment.setText("+");
-
-        // Increment once for a click
-        increment.setOnClickListener(new View.OnClickListener() {
+        dec = new Button(context);
+        dec.setText("-");
+        dec.setLayoutParams(new LinearLayout.LayoutParams(100, 150));
+        dec.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View v) {
-                increment();
+                setValue(value - 1);
             }
         });
+        this.addView(dec);
 
-        increment.setOnLongClickListener(
-                new View.OnLongClickListener() {
-                    public boolean onLongClick(View arg0) {
-                        autoIncrement = true;
-                        repeatUpdateHandler.post(new RepetetiveUpdater());
-                        return false;
-                    }
-                }
-        );
+        display = new TextView(context);
+        display.setText("0");
+        display.setGravity(Gravity.CENTER);
+        display.setLayoutParams(new LinearLayout.LayoutParams(100, 150));
+        this.addView(display);
 
-        increment.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP && autoIncrement) {
-                    autoIncrement = false;
-                }
-                return false;
-            }
-        });
-    }
-
-    private void initValueEditText(Context context) {
-
-        value = new Integer(0);
-
-        valueText = new EditText(context);
-        valueText.setTextSize(TEXT_SIZE);
-
-        valueText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int arg1, KeyEvent event) {
-                int backupValue = value;
-                try {
-                    value = Integer.parseInt(((EditText) v).getText().toString());
-                } catch (NumberFormatException nfe) {
-                    value = backupValue;
-                }
-                return false;
-            }
-        });
-
-        valueText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    ((EditText) v).selectAll();
-                }
-            }
-        });
-        valueText.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        valueText.setText(value.toString());
-        valueText.setInputType(InputType.TYPE_CLASS_NUMBER);
-    }
-
-    private void initDecrementButton(Context context) {
-        decrement = new Button(context);
-        decrement.setTextSize(TEXT_SIZE);
-        decrement.setText("-");
-
-
-        decrement.setOnClickListener(new View.OnClickListener() {
+        inc = new Button(context);
+        inc.setText("+");
+        inc.setLayoutParams(new LinearLayout.LayoutParams(100, 150));
+        inc.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View v) {
-                decrement();
+                setValue(value + 1);
             }
         });
-
-
-        decrement.setOnLongClickListener(
-                new View.OnLongClickListener() {
-                    public boolean onLongClick(View arg0) {
-                        autoDecrement = true;
-                        repeatUpdateHandler.post(new RepetetiveUpdater());
-                        return false;
-                    }
-                }
-        );
-
-        decrement.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP && autoDecrement) {
-                    autoDecrement = false;
-                }
-                return false;
-            }
-        });
+        this.addView(inc);
     }
 
-    public void increment() {
-        if (value < MAXIMUM) {
-            value = value + 1;
-            valueText.setText(value.toString());
-        }
-    }
-
-    public void decrement() {
-        if (value > MINIMUM) {
-            value = value - 1;
-            valueText.setText(value.toString());
-        }
-    }
-
-    public int getValue() {
-        return value;
-    }
 
     public void setValue(int value) {
-        if (value > MAXIMUM) value = MAXIMUM;
-        if (value >= 0) {
-            this.value = value;
-            valueText.setText(this.value.toString());
-        }
+        this.value = value;
+        display.setText(String.valueOf(this.value));
     }
 
+    public Integer getValue() {
+        return value;
+    }
 }
