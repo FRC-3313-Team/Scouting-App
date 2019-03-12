@@ -82,7 +82,7 @@ public class MatchButtons extends LinearLayout {
                 if (fragment instanceof ScoutingMatchFragment) {
                     ScoutingMatchFragment sm = (ScoutingMatchFragment) fragment;
                     //TODO save match data
-
+/*
                     try {/*
                         fragment.data.getJSONObject("auto").put("switch", sm.autoSwitchBox.isChecked());
                         fragment.data.getJSONObject("auto").put("scale", sm.autoScaleBox.isChecked());
@@ -92,9 +92,9 @@ public class MatchButtons extends LinearLayout {
                         fragment.data.getJSONObject("tele").put("switch", sm.switchPicker.getValue());
                         fragment.data.getJSONObject("tele").put("exchange", sm.exchangePicker.getValue());
                         fragment.data.getJSONObject("tele").put("climb", sm.teleClimbBox.isChecked());
-                        */
+
                     } catch (JSONException e) {
-                    }
+                    }*/
 
                 } else if (fragment instanceof ScoutingNotesFragment) {
                     ScoutingNotesFragment sm = (ScoutingNotesFragment) fragment;

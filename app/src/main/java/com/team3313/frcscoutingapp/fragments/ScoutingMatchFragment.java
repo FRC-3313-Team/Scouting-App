@@ -77,12 +77,6 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         autoRow.addView(autoMoveLabel);
 
         autoMoveBox = new CheckBox(getContext());
-        try {
-            //TODO check actual data name                                         V
-            autoMoveBox.setChecked(data.getJSONObject("auto").getBoolean("passedLine"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         autoRow.addView(autoMoveBox);
 
         TextView habStartLabel = new TextView(getContext());
@@ -104,30 +98,38 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         TableRow rLabelRow = new TableRow(getContext());
 
         TableRow.LayoutParams params = new TableRow.LayoutParams();
-        TextView cargoLabel = new TextView(getContext());
-        cargoLabel.setText("Cargo");
-        params = new TableRow.LayoutParams();
         params.span = 2; //amount of columns you will span
         params.gravity = Gravity.CENTER_HORIZONTAL;
+        params.height = TableRow.LayoutParams.WRAP_CONTENT;
+        params.width = TableRow.LayoutParams.WRAP_CONTENT;
+
+        TableRow.LayoutParams pickParam = new TableRow.LayoutParams();
+        pickParam.width = TableRow.LayoutParams.WRAP_CONTENT;
+        pickParam.height = TableRow.LayoutParams.WRAP_CONTENT;
+
+
+        TextView cargoLabel = new TextView(getContext());
+        cargoLabel.setText("Cargo");
+        cargoLabel.setTextSize(25);
         cargoLabel.setLayoutParams(params);
         rLabelRow.addView(cargoLabel);
 
         rLabelRow.addView(new Space(getContext()));
         TextView hatchLabel = new TextView(getContext());
         hatchLabel.setText("Hatch");
-        params = new TableRow.LayoutParams();
-        params.span = 2; //amount of columns you will span
-        params.gravity = Gravity.CENTER_HORIZONTAL;
-        hatchLabel.setLayoutParams(params);
+        hatchLabel.setTextSize(25);
+        hatchLabel.setLayoutParams(pickParam);
         rLabelRow.addView(hatchLabel);
 
         //top row
         TableRow rTopRow = new TableRow(getContext());
         rocketTopCargo = new NumberPicker(getContext(), null);
+        rocketTopCargo.setLayoutParams(pickParam);
         rTopRow.addView(rocketTopCargo);
         rTopRow.addView(new Space(getContext()));
         rTopRow.addView(new Space(getContext()));
         rocketTopHatch = new NumberPicker(getContext(), null);
+        rocketTopHatch.setLayoutParams(pickParam);
         rTopRow.addView(new Space(getContext()));
 
         teleopTable.addView(rTopRow);
@@ -135,10 +137,12 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         //mid row
         TableRow rMidRow = new TableRow(getContext());
         rocketMidCargo = new NumberPicker(getContext(), null);
+        rocketMidCargo.setLayoutParams(pickParam);
         rMidRow.addView(rocketMidCargo);
         rMidRow.addView(new Space(getContext()));
         rMidRow.addView(new Space(getContext()));
         rocketMidHatch = new NumberPicker(getContext(), null);
+        rocketMidHatch.setLayoutParams(pickParam);
         rMidRow.addView(new Space(getContext()));
 
         teleopTable.addView(rMidRow);
@@ -146,12 +150,17 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         //bot row
         TableRow rBotRow = new TableRow(getContext());
         rocketBotCargo = new NumberPicker(getContext(), null);
+        rocketBotCargo.setLayoutParams(pickParam);
         rBotRow.addView(rocketBotCargo);
         podCargo = new NumberPicker(getContext(), null);
+        podCargo.setLayoutParams(pickParam);
         rBotRow.addView(podCargo);
         rBotRow.addView(new Space(getContext()));
         rocketBotHatch = new NumberPicker(getContext(), null);
+        rocketBotHatch.setLayoutParams(pickParam);
+        rBotRow.addView(rocketBotHatch);
         podHatch = new NumberPicker(getContext(), null);
+        podHatch.setLayoutParams(pickParam);
         rBotRow.addView(podHatch);
 
         teleopTable.addView(rBotRow);

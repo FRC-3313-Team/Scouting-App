@@ -145,6 +145,7 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
         });
 
         renderedView.setMinHeight(75);
+        renderedView.setTextSize(25);
         renderedView.setGravity(Gravity.CENTER_VERTICAL);
         return renderedView;
     }
