@@ -2,6 +2,7 @@ package com.team3313.frcscoutingapp.components;
 
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -13,7 +14,9 @@ import com.team3313.frcscoutingapp.fragments.ScoutingFragment;
 import com.team3313.frcscoutingapp.fragments.ScoutingMatchFragment;
 import com.team3313.frcscoutingapp.fragments.ScoutingNotesFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by 3313 on 3/13/2018.
@@ -82,19 +85,46 @@ public class MatchButtons extends LinearLayout {
                 if (fragment instanceof ScoutingMatchFragment) {
                     ScoutingMatchFragment sm = (ScoutingMatchFragment) fragment;
                     //TODO save match data
-/*
-                    try {/*
-                        fragment.data.getJSONObject("auto").put("switch", sm.autoSwitchBox.isChecked());
-                        fragment.data.getJSONObject("auto").put("scale", sm.autoScaleBox.isChecked());
-                        fragment.data.getJSONObject("auto").put("passedLine", sm.autoCrossBox.isChecked());
 
-                        fragment.data.getJSONObject("tele").put("scale", sm.scalePicker.getValue());
-                        fragment.data.getJSONObject("tele").put("switch", sm.switchPicker.getValue());
-                        fragment.data.getJSONObject("tele").put("exchange", sm.exchangePicker.getValue());
-                        fragment.data.getJSONObject("tele").put("climb", sm.teleClimbBox.isChecked());
+                    try {
 
+                        JSONObject dat = new JSONObject();
+                        JSONObject auto = new JSONObject();
+                        JSONObject hab = new JSONObject();
+                        JSONObject rocket = new JSONObject();
+                        JSONObject pod = new JSONObject();
+
+                        auto.put("hatch", false);
+                        auto.put("cargo", false);
+                        auto.put("movement", sm.autoMoveBox.isChecked());
+
+                        hab.put("start", sm.habStart.getSelectedItemPosition());
+                        hab.put("end",sm.habEnd.getSelectedItemPosition());
+
+                        pod.put("hatch", sm.podHatch.getValue());
+                        pod.put("cargo", sm.podCargo.getValue());
+
+                        JSONArray rocketCargo = new JSONArray();
+                        rocketCargo.put(sm.rocketTopCargo.getValue());
+                        rocketCargo.put(sm.rocketMidCargo.getValue());
+                        rocketCargo.put(sm.rocketBotCargo.getValue());
+                        rocket.put("cargo", rocketCargo);
+
+                        JSONArray rocketHatch = new JSONArray();
+                        rocketHatch.put(sm.rocketTopHatch.getValue());
+                        rocketHatch.put(sm.rocketMidHatch.getValue());
+                        rocketHatch.put(sm.rocketBotHatch.getValue());
+                        rocket.put("hatch", rocketHatch);
+
+                        dat.put("auto", auto);
+                        dat.put("habitat", hab);
+                        dat.put("rocket", rocket);
+                        dat.put("pod", pod);
+                        dat.put("defense", sm.defenseBox.isChecked());
+                        fragment.data.put("data",dat);
                     } catch (JSONException e) {
-                    }*/
+                        e.printStackTrace();
+                    }
 
                 } else if (fragment instanceof ScoutingNotesFragment) {
                     ScoutingNotesFragment sm = (ScoutingNotesFragment) fragment;
@@ -111,9 +141,10 @@ public class MatchButtons extends LinearLayout {
                     e.printStackTrace();
                 }
                 try {
-                    DataStore.updateTeamStats(fragment.data.getString("team_key"));
+                    DataStore.updateTeamStats(fragment.data.getString("team"));
                 } catch (JSONException e) {
                 }
+                Log.e("Airror", fragment.data.toString());
             }
         });
         addView(saveButton);

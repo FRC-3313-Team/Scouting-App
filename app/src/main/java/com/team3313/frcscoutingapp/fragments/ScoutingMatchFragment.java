@@ -2,6 +2,7 @@ package com.team3313.frcscoutingapp.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +62,7 @@ public class ScoutingMatchFragment extends ScoutingFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.e("Airror", data.toString());
         MainActivity.instance.setTitle(getData("match", String.class).replace("qm", "Qualifier Match ") + " - Watching Team " + getData("team", String.class).substring(3));
         linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -126,6 +128,7 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
         //top row
         rocketTopCargo = new NumberPicker(getContext(), null);
+        rocketTopCargo.setOrientation(LinearLayout.HORIZONTAL);
         gridParams = new GridLayout.LayoutParams(
                 GridLayout.spec(1, 1, GridLayout.CENTER),
                 GridLayout.spec(0, 1));
@@ -177,9 +180,9 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         LinearLayout endgameRow = new LinearLayout(getContext());
         endgameRow.setOrientation(LinearLayout.HORIZONTAL);
 
-        TextView defenceLabel = new TextView(getContext());
-        defenceLabel.setText("Played Defense");
-        endgameRow.addView(defenceLabel);
+        TextView defenseLabel = new TextView(getContext());
+        defenseLabel.setText("Played Defense");
+        endgameRow.addView(defenseLabel);
 
         defenseBox = new CheckBox(getContext());
 
@@ -207,7 +210,6 @@ public class ScoutingMatchFragment extends ScoutingFragment {
             JSONArray rocketHatch = matchData.getJSONObject("rocket").getJSONArray("hatch");
             JSONArray rocketCargo = matchData.getJSONObject("rocket").getJSONArray("cargo");
             autoMoveBox.setChecked(auto.getBoolean("movement"));
-            defenseBox.setChecked(matchData.getBoolean("defense"));
             habStart.setSelection(hab.getInt("start"));
             habEnd.setSelection(hab.getInt("end"));
             rocketTopCargo.setValue(rocketCargo.getInt(0));
@@ -218,6 +220,7 @@ public class ScoutingMatchFragment extends ScoutingFragment {
             rocketMidHatch.setValue(rocketHatch.getInt(1));
             rocketBotHatch.setValue(rocketHatch.getInt(2));
             podHatch.setValue(pod.getInt("hatch"));
+            defenseBox.setChecked(matchData.getBoolean("defense"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

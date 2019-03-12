@@ -27,13 +27,4 @@ public class ScoutingFragment extends Fragment {
         fragment.data = start;
         return fragment;
     }
-
-    public void saveData() {
-        try {
-            data.put("updated", true);
-            DataStore.matchTable.put(data.getString("match"), data.getString("position"), data);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 }
