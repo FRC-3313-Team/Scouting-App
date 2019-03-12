@@ -1,3 +1,48 @@
 <resources>
-    <string name="app_name">FRC Scouting App</string>
+    <string name="app_name">FRC Scouting</string>
+    <string name="title_activity_main">Regional Scouting App</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="button_name">a</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="saveMatchButton">Save Match Data</string>
+    <string name="startup_info">General startup info goes here</string>
+    <string-array name="navigation_drawer_items_array">
+        <item>Schedule</item>
+        <item>Team List</item>
+        <item>Rankings</item>
+        <item>Settings</item>
+    </string-array>
+    <string-array name="driver_station">
+        <item>Red 1</item>
+        <item>Red 2</item>
+        <item>Red 3</item>
+        <item>Blue 1</item>
+        <item>Blue 2</item>
+        <item>Blue 3</item>
+    </string-array>
+    <string-array name="sites">
+        <item>Twitter</item>
+        <item>Website</item>
+        <item>Facebook</item>
+        <item>YouTube</item>
+        <item>SnapChat</item>
+        <item>Myspace</item>
+        <item>Instagram</item>
+        <item>Tumblr</item>
+        <item>E-Mail</item>
+        <item>Other 1</item>
+        <item>Other 2</item>
+        <item>Other 3</item>
+    </string-array>
+    <string-array name="hab_levels">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 </resources>
