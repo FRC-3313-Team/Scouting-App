@@ -8,10 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.Space;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -20,6 +19,7 @@ import com.team3313.frcscoutingapp.R;
 import com.team3313.frcscoutingapp.components.MatchButtons;
 import com.team3313.frcscoutingapp.components.NumberPicker;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -92,10 +92,9 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         linearLayout.addView(autoRow);
 
         //teleop data
-        TableLayout teleopTable = new TableLayout(getContext());
+        GridLayout grid = new GridLayout(getContext());
 
         //label row
-        TableRow rLabelRow = new TableRow(getContext());
 
         TableRow.LayoutParams params = new TableRow.LayoutParams();
         params.span = 2; //amount of columns you will span
@@ -109,64 +108,70 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
 
         TextView cargoLabel = new TextView(getContext());
+
         cargoLabel.setText("Cargo");
         cargoLabel.setTextSize(25);
-        cargoLabel.setLayoutParams(params);
-        rLabelRow.addView(cargoLabel);
+        GridLayout.LayoutParams gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(0, 1, GridLayout.CENTER),
+                GridLayout.spec(0, 1));
+        grid.addView(cargoLabel, gridParams);
 
-        rLabelRow.addView(new Space(getContext()));
         TextView hatchLabel = new TextView(getContext());
         hatchLabel.setText("Hatch");
         hatchLabel.setTextSize(25);
-        hatchLabel.setLayoutParams(pickParam);
-        rLabelRow.addView(hatchLabel);
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(0, 1, GridLayout.CENTER),
+                GridLayout.spec(3, 1));
+        grid.addView(hatchLabel, gridParams);
 
         //top row
-        TableRow rTopRow = new TableRow(getContext());
         rocketTopCargo = new NumberPicker(getContext(), null);
-        rocketTopCargo.setLayoutParams(pickParam);
-        rTopRow.addView(rocketTopCargo);
-        rTopRow.addView(new Space(getContext()));
-        rTopRow.addView(new Space(getContext()));
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(1, 1, GridLayout.CENTER),
+                GridLayout.spec(0, 1));
+        grid.addView(rocketTopCargo, gridParams);
         rocketTopHatch = new NumberPicker(getContext(), null);
-        rocketTopHatch.setLayoutParams(pickParam);
-        rTopRow.addView(new Space(getContext()));
-
-        teleopTable.addView(rTopRow);
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(1, 1, GridLayout.CENTER),
+                GridLayout.spec(3, 1));
+        grid.addView(rocketTopHatch, gridParams);
 
         //mid row
-        TableRow rMidRow = new TableRow(getContext());
         rocketMidCargo = new NumberPicker(getContext(), null);
-        rocketMidCargo.setLayoutParams(pickParam);
-        rMidRow.addView(rocketMidCargo);
-        rMidRow.addView(new Space(getContext()));
-        rMidRow.addView(new Space(getContext()));
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(2, 1, GridLayout.CENTER),
+                GridLayout.spec(0, 1));
+        grid.addView(rocketMidCargo, gridParams);
         rocketMidHatch = new NumberPicker(getContext(), null);
-        rocketMidHatch.setLayoutParams(pickParam);
-        rMidRow.addView(new Space(getContext()));
-
-        teleopTable.addView(rMidRow);
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(2, 1, GridLayout.CENTER),
+                GridLayout.spec(3, 1));
+        grid.addView(rocketMidHatch, gridParams);
 
         //bot row
-        TableRow rBotRow = new TableRow(getContext());
         rocketBotCargo = new NumberPicker(getContext(), null);
-        rocketBotCargo.setLayoutParams(pickParam);
-        rBotRow.addView(rocketBotCargo);
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(3, 1, GridLayout.CENTER),
+                GridLayout.spec(0, 1));
+        grid.addView(rocketBotCargo, gridParams);
         podCargo = new NumberPicker(getContext(), null);
-        podCargo.setLayoutParams(pickParam);
-        rBotRow.addView(podCargo);
-        rBotRow.addView(new Space(getContext()));
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(3, 1, GridLayout.CENTER),
+                GridLayout.spec(1, 1));
+        grid.addView(podCargo, gridParams);
         rocketBotHatch = new NumberPicker(getContext(), null);
-        rocketBotHatch.setLayoutParams(pickParam);
-        rBotRow.addView(rocketBotHatch);
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(3, 1, GridLayout.CENTER),
+                GridLayout.spec(3, 1));
+        grid.addView(rocketBotHatch, gridParams);
         podHatch = new NumberPicker(getContext(), null);
-        podHatch.setLayoutParams(pickParam);
-        rBotRow.addView(podHatch);
+        gridParams = new GridLayout.LayoutParams(
+                GridLayout.spec(3, 1, GridLayout.CENTER),
+                GridLayout.spec(4, 1));
+        grid.addView(podHatch, gridParams);
 
-        teleopTable.addView(rBotRow);
 
-
-        linearLayout.addView(teleopTable);
+        linearLayout.addView(grid);
 
         //endgame data
         LinearLayout endgameRow = new LinearLayout(getContext());
@@ -180,9 +185,6 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
         endgameRow.addView(defenseBox);
 
-//TODO set defence based on previous data
-
-
         TextView habEndLabel = new TextView(getContext());
         habEndLabel.setText("End Level");
         endgameRow.addView(habEndLabel);
@@ -195,6 +197,30 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
 
         linearLayout.addView(endgameRow);
+
+        //load previous data
+        try {
+            JSONObject matchData = this.data.getJSONObject("data");
+            JSONObject auto = matchData.getJSONObject("auto");
+            JSONObject hab = matchData.getJSONObject("habitat");
+            JSONObject pod = matchData.getJSONObject("pod");
+            JSONArray rocketHatch = matchData.getJSONObject("rocket").getJSONArray("hatch");
+            JSONArray rocketCargo = matchData.getJSONObject("rocket").getJSONArray("cargo");
+            autoMoveBox.setChecked(auto.getBoolean("movement"));
+            defenseBox.setChecked(matchData.getBoolean("defense"));
+            habStart.setSelection(hab.getInt("start"));
+            habEnd.setSelection(hab.getInt("end"));
+            rocketTopCargo.setValue(rocketCargo.getInt(0));
+            rocketMidCargo.setValue(rocketCargo.getInt(1));
+            rocketBotCargo.setValue(rocketCargo.getInt(2));
+            podCargo.setValue(pod.getInt("cargo"));
+            rocketTopHatch.setValue(rocketHatch.getInt(0));
+            rocketMidHatch.setValue(rocketHatch.getInt(1));
+            rocketBotHatch.setValue(rocketHatch.getInt(2));
+            podHatch.setValue(pod.getInt("hatch"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         //return
         return linearLayout;
