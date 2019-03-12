@@ -23,9 +23,6 @@ import com.team3313.frcscoutingapp.R;
 import com.team3313.frcscoutingapp.components.TextViewExtra;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.Random;
 
 
 public class TeamListFragment extends Fragment {
@@ -54,33 +51,24 @@ public class TeamListFragment extends Fragment {
         for (int i = 0; i < COLUMNS; i++) {
             tableLayout.setColumnStretchable(i, true);
         }
-
-        TableRow header = new TableRow(getContext());
-        header.addView(new TextViewExtra(getContext(), "Red 1", null));
-        header.addView(new TextViewExtra(getContext(), "Red 2", null));
-        header.addView(new TextViewExtra(getContext(), "Red 3", null));
-        header.addView(new TextViewExtra(getContext(), "Blue 1", null));
-        header.addView(new TextViewExtra(getContext(), "Blue 2", null));
-        header.addView(new TextViewExtra(getContext(), "Blue 3", null));
-tableLayout.addView(header);
         for (int i = 0; i < r + 1; i++) {
             TableRow row = new TableRow(getContext());
 
             for (int c = 0; c < COLUMNS; c++) {
                 try {
                     TextView view = new TextView(getContext());
-                    view.setText(DataStore.teamData.getJSONObject(names.getString(i * COLUMNS + c)).getString("number").substring(3));
+                    view.setTextSize(25);
+                    view.setText(DataStore.teamData.getJSONObject(names.getString(i * COLUMNS + c)).getString("key").substring(3));
                     view.setMinHeight(50);
                     view.setGravity(Gravity.CENTER);
                     int color = Color.WHITE;
-                    if(c % 2 == 0){
+                    if (c % 2 == 0) {
                         color = Color.LTGRAY;
                     }
-                    if(i % 2 == 0){
-                        if(color == Color.WHITE){
+                    if (i % 2 == 0) {
+                        if (color == Color.WHITE) {
                             color = Color.LTGRAY;
-                        }
-                        else{
+                        } else {
                             color = 0xffaaaaaa;
                         }
                     }

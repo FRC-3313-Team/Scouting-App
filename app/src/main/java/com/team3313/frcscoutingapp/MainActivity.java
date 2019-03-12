@@ -1,6 +1,5 @@
 package com.team3313.frcscoutingapp;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -70,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    public static RequestQueue myRequestQueue ;
+    public static RequestQueue myRequestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

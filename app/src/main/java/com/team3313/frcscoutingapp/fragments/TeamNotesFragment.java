@@ -65,7 +65,7 @@ public class TeamNotesFragment extends TeamFragment {
                 if (item.getString("team").equalsIgnoreCase(teamKey)) {
                     if (item.getString("notes") != null && !item.getString("notes").equalsIgnoreCase("")) {
                         TextView label = new TextView(getContext());
-                        label.setText(item.getString("match").split("_")[1]);
+                        label.setText(item.getString("match"));
                         label.setTypeface(null, Typeface.BOLD);
                         label.setTextSize(20);
                         linearLayout.addView(label);

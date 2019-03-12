@@ -7,11 +7,12 @@ import android.widget.LinearLayout;
 
 import com.team3313.frcscoutingapp.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import de.codecrafters.tableview.SortableTableView;
 import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter;
@@ -26,9 +27,15 @@ public class MatchList extends LinearLayout {
     ArrayList<String> matches = new ArrayList();
     SortableTableView<JSONObject> table;
 
-    public MatchList(Context context, ArrayList list) {
+    public MatchList(Context context, ArrayList<String> list) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
+        Collections.sort(list, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return Integer.parseInt(o1.substring(2)) - Integer.parseInt(o2.substring(2));
+            }
+        });
         matches = list;
         View matches = createMatches();
         addView(matches);

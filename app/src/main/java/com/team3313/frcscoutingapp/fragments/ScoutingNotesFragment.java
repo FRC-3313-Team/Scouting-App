@@ -2,16 +2,13 @@ package com.team3313.frcscoutingapp.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.team3313.frcscoutingapp.MainActivity;
-import com.team3313.frcscoutingapp.R;
 import com.team3313.frcscoutingapp.components.MatchButtons;
 
 import org.json.JSONException;
@@ -44,7 +41,7 @@ public class ScoutingNotesFragment extends ScoutingFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        MainActivity.instance.setTitle("Notes for " + getData("match_key", String.class).split("_")[1].replace("qm", "Qualifier Match ") + " - Watching Team " + getData("team_key", String.class).substring(3));
+        MainActivity.instance.setTitle(getData("match", String.class).replace("qm", "Qualifier Match ") + " - Watching Team " + getData("team", String.class).substring(3));
         linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 

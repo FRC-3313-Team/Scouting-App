@@ -3,6 +3,7 @@ package com.team3313.frcscoutingapp.components;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,16 +36,16 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
         switch (columnIndex) {
             case 0:
                 try {
-                    renderedView.setText(match.getString("key").split("_")[1]);
+                    renderedView.setText(match.getString("key"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 break;
             case 1:
                 try {
-                    String team = DataStore.matchTable.get(match.getString("key"),"r1").getString("team");
+                    String team = DataStore.matchTable.get(match.getString("key"), "r1").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchTable.get(match.getString("key"),"r1").getBoolean("scouted")) {
+                    if (DataStore.matchTable.get(match.getString("key"), "r1").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -53,9 +54,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 2:
                 try {
-                    String team = DataStore.matchTable.get(match.getString("key"),"r2").getString("team");
+                    String team = DataStore.matchTable.get(match.getString("key"), "r2").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchTable.get(match.getString("key"),"r2").getBoolean("scouted")) {
+                    if (DataStore.matchTable.get(match.getString("key"), "r2").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -64,9 +65,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 3:
                 try {
-                    String team = DataStore.matchTable.get(match.getString("key"),"r3").getString("team");
+                    String team = DataStore.matchTable.get(match.getString("key"), "r3").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchTable.get(match.getString("key"),"r3").getBoolean("scouted")) {
+                    if (DataStore.matchTable.get(match.getString("key"), "r3").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -75,9 +76,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 4:
                 try {
-                    String team = DataStore.matchTable.get(match.getString("key"),"b1").getString("team");
+                    String team = DataStore.matchTable.get(match.getString("key"), "b1").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchTable.get(match.getString("key"),"b1").getBoolean("scouted")) {
+                    if (DataStore.matchTable.get(match.getString("key"), "b1").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -86,9 +87,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 5:
                 try {
-                    String team = DataStore.matchTable.get(match.getString("key"),"b2").getString("team");
+                    String team = DataStore.matchTable.get(match.getString("key"), "b2").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchTable.get(match.getString("key"),"b2").getBoolean("scouted")) {
+                    if (DataStore.matchTable.get(match.getString("key"), "b2").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -97,9 +98,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 6:
                 try {
-                    String team = DataStore.matchTable.get(match.getString("key"),"b2").getString("team");
+                    String team = DataStore.matchTable.get(match.getString("key"), "b2").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchTable.get(match.getString("key"),"b2").getBoolean("scouted")) {
+                    if (DataStore.matchTable.get(match.getString("key"), "b2").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {
@@ -116,22 +117,22 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                     String pos = "";
                     switch (DataStore.config.getInt("station")) {
                         case 0:
-                            pos ="r1";
+                            pos = "r1";
                             break;
                         case 1:
-                            pos ="r2";
+                            pos = "r2";
                             break;
                         case 2:
-                            pos ="r3";
+                            pos = "r3";
                             break;
                         case 3:
-                            pos ="b1";
+                            pos = "b1";
                             break;
                         case 4:
-                            pos ="b2";
+                            pos = "b2";
                             break;
                         case 5:
-                            pos ="b3";
+                            pos = "b3";
                             break;
                     }
                     start = DataStore.matchTable.get(match.getString("key"), pos);

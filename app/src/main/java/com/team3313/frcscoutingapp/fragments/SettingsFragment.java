@@ -7,7 +7,6 @@ package com.team3313.frcscoutingapp.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.ArrayMap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,26 +21,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.team3313.frcscoutingapp.DataStore;
 import com.team3313.frcscoutingapp.MainActivity;
 import com.team3313.frcscoutingapp.R;
-import com.team3313.frcscoutingapp.RESTGetter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.Map;
 
 

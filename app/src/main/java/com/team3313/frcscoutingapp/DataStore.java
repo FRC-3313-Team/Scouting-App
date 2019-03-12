@@ -3,8 +3,18 @@ package com.team3313.frcscoutingapp;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.ArrayMap;
 import android.util.Log;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
@@ -18,11 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -39,46 +50,6 @@ public class DataStore {
     public static JSONObject config = new JSONObject();
     public static JSONObject teamData = new JSONObject();
 
-    private static RESTGetter.HttpsRequestTaskArray updateTeamData() throws JSONException {
-        return new RESTGetter.HttpsRequestTaskArray(SERVER + "/api/scout/teams", "{\"regional\":\"" + config.get("regional") + "\"}") {
-            @Override
-            protected void customEnd(JSONArray r) {
-                try {
-
-                    for (int i = 0; i < r.length(); i++) {
-                        JSONObject team = r.getJSONObject(i);
-
-                        teamData.put(team.getString("team"), team);
-                    }
-                    writeToFile(teamData.toString(), "teams.json");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
-
-
-    private static RESTGetter.HttpsRequestTaskArray updateMatchData() throws JSONException {
-        return new RESTGetter.HttpsRequestTaskArray(SERVER + "/api/scout/matches", "{\"regional\":\"" + config.get("regional") + "\"}") {
-            @Override
-            protected void customEnd(JSONArray r) {
-                for (int i = 0; i < r.length(); i++) {
-                    try {
-                        JSONObject match = r.getJSONObject(i);
-                        JSONArray teams = match.getJSONArray("data");
-                        for (int j = 0; j < teams.length(); j++) {
-                            JSONObject data = teams.getJSONObject(j);
-                            data.put("match", match.getString("match"));
-                            matchTable.put(match.getString("match"), teams.getJSONObject(j).getString("position"), data);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-    }
 
     static void initLoad() {
         String configString = readFromFile("config.json");
@@ -138,9 +109,98 @@ public class DataStore {
             @Override
             protected void onPostExecute(Void v) {
                 try {
-                    updateTeamData().execute("device-token:" + config.getString("apiKey"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    JsonObjectRequest teamRequest = new JsonObjectRequest
+                            (Request.Method.GET, DataStore.SERVER + "/api/scout/teams?regional=" + config.getString("regional"), null, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        JSONArray teams = response.getJSONArray("teams");
+
+
+                                        for (int i = 0; i < teams.length(); i++) {
+                                            JSONObject team = teams.getJSONObject(i);
+
+                                            teamData.put(team.getString("key"), team);
+                                        }
+                                        writeToFile(teamData.toString(), "teams.json");
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    // As of f605da3 the following should work
+                                    NetworkResponse response = error.networkResponse;
+                                    if (error instanceof ServerError && response != null) {
+                                        try {
+                                            String res = new String(response.data,
+                                                    HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+                                            Log.e("Airror", res);
+                                            // Now you can use any deserializer to make sense of data
+                                            JSONObject obj = new JSONObject(res);
+                                        } catch (UnsupportedEncodingException e1) {
+                                            // Couldn't properly decode data to string
+                                            e1.printStackTrace();
+                                        } catch (JSONException e2) {
+                                            // returned data is not JSONObject?
+                                            e2.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }) {
+                        public Map<String, String> getHeaders() {
+
+                            Map<String, String> mHeaders = new ArrayMap<String, String>();
+                            try {
+                                mHeaders.put("device-token", DataStore.config.getString("apiKey"));
+                                mHeaders.put("Content-Type", "application/json");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            return mHeaders;
+                        }
+                    };
+                    MainActivity.myRequestQueue.add(teamRequest);
+
+
+                    JsonObjectRequest matchRequest = new JsonObjectRequest
+                            (Request.Method.GET, DataStore.SERVER + "/api/scout/matches?regional=" + config.getString("regional"), null, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        JSONArray matches = response.getJSONArray("matches");
+
+
+                                        for (int i = 0; i < matches.length(); i++) {
+                                            JSONObject match = matches.getJSONObject(i);
+                                            JSONArray teams = match.getJSONArray("data");
+                                            for (int j = 0; j < teams.length(); j++) {
+                                                JSONObject data = teams.getJSONObject(j);
+                                                data.put("match", match.getString("match"));
+                                                matchTable.put(match.getString("match"), teams.getJSONObject(j).getString("position"), data);
+                                            }
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, null) {
+                        public Map<String, String> getHeaders() {
+
+                            Map<String, String> mHeaders = new ArrayMap<String, String>();
+                            try {
+                                mHeaders.put("device-token", DataStore.config.getString("apiKey"));
+                                mHeaders.put("Content-Type", "application/json");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            return mHeaders;
+                        }
+                    };
+                    MainActivity.myRequestQueue.add(matchRequest);
+                } catch (Exception ex) {
+
                 }
             }
 
@@ -288,39 +348,53 @@ public class DataStore {
             }
         }
 
-        final RESTGetter.HttpsSubmitTask t = new RESTGetter.HttpsSubmitTask(SERVER + "/api/scout/upload", toUpload.toString()) {
-            @Override
-            protected void customEnd(String r) {
 
-                if (!r.startsWith("fail")) {
-
-                    for (final JSONObject item : matchTable.values()) {
-                        try {
-                            if (item.getBoolean("updated")) {
-                                item.remove("updated");
-                            }
-                        } catch (JSONException e) {
-                            //item is missing the 'updated' tag
-                        }
-                    }
-
-                    for (int i = 0; i < names.length(); i++) {
-                        try {
-                            if (teamData.getJSONObject(names.getString(i)).has("pit")) {
-                                JSONObject pit = teamData.getJSONObject(names.getString(i)).getJSONObject("pit");
-                                if (pit.getBoolean("updated")) {
-                                    pit.remove("updated");
+        JsonArrayRequest uploadChanges = new JsonArrayRequest(Request.Method.POST, DataStore.SERVER + "/api/scout/upload", toUpload,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        for (final JSONObject item : matchTable.values()) {
+                            try {
+                                if (item.getBoolean("updated")) {
+                                    item.remove("updated");
                                 }
+                            } catch (JSONException e) {
+                                //item is missing the 'updated' tag
                             }
-                        } catch (JSONException e) {
-                            //item is missing the 'updated' tag
+                        }
+
+                        for (int i = 0; i < names.length(); i++) {
+                            try {
+                                if (teamData.getJSONObject(names.getString(i)).has("pit")) {
+                                    JSONObject pit = teamData.getJSONObject(names.getString(i)).getJSONObject("pit");
+                                    if (pit.getBoolean("updated")) {
+                                        pit.remove("updated");
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                //item is missing the 'updated' tag
+                            }
                         }
                     }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                VolleyLog.e("Error: ", volleyError.getMessage());
+
+            }
+        }) {
+            public Map<String, String> getHeaders() {
+
+                Map<String, String> mHeaders = new ArrayMap<String, String>();
+                try {
+                    mHeaders.put("device-token", DataStore.config.getString("apiKey"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                return mHeaders;
             }
         };
-        t.execute();
-
+        MainActivity.myRequestQueue.add(uploadChanges);
     }
 
     public static void autoSave() {
@@ -332,7 +406,7 @@ public class DataStore {
         for (String key : matchTable.rowKeySet()) {
             try {
                 JSONObject match = new JSONObject();
-                match.put("match", match.getString("match"));
+                match.put("match", key);
                 JSONArray data = new JSONArray();
                 for (String position : matchTable.columnKeySet()) {
                     data.put(matchTable.get(key, position));

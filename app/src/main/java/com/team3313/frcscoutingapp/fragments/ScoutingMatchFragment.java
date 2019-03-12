@@ -10,10 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Space;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Spinner;
 
 import com.team3313.frcscoutingapp.MainActivity;
 import com.team3313.frcscoutingapp.R;
@@ -61,7 +61,7 @@ public class ScoutingMatchFragment extends ScoutingFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        MainActivity.instance.setTitle(getData("match_key", String.class).split("_")[1].replace("qm", "Qualifier Match ") + " - Watching Team " + getData("team_key", String.class).substring(3));
+        MainActivity.instance.setTitle(getData("match", String.class).replace("qm", "Qualifier Match ") + " - Watching Team " + getData("team", String.class).substring(3));
         linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -169,6 +169,8 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
         defenseBox = new CheckBox(getContext());
 
+        endgameRow.addView(defenseBox);
+
 //TODO set defence based on previous data
 
 
@@ -180,7 +182,7 @@ public class ScoutingMatchFragment extends ScoutingFragment {
         ArrayAdapter<CharSequence> endAdapter = ArrayAdapter.createFromResource(getContext(), R.array.hab_levels, android.R.layout.simple_spinner_item);
         endAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         habEnd.setAdapter(endAdapter);
-        autoRow.addView(habEnd);
+        endgameRow.addView(habEnd);
 
 
         linearLayout.addView(endgameRow);
