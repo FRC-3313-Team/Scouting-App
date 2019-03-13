@@ -109,6 +109,30 @@ public class DataStore {
             @Override
             protected void onPostExecute(Void v) {
                 try {
+                    JsonObjectRequest statusRequest = new JsonObjectRequest
+                            (Request.Method.GET, DataStore.SERVER + "/api/device/status", null, new Response.Listener<JSONObject>() {
+
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        DataStore.config.put("regional", response.get("regional"));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, null) {
+                        public Map<String, String> getHeaders() {
+
+                            Map<String, String> mHeaders = new ArrayMap<String, String>();
+                            try {
+                                mHeaders.put("device-token", DataStore.config.getString("apiKey"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            return mHeaders;
+                        }
+                    };
+                    MainActivity.myRequestQueue.add(statusRequest);
                     JsonObjectRequest teamRequest = new JsonObjectRequest
                             (Request.Method.GET, DataStore.SERVER + "/api/scout/teams?regional=" + config.getString("regional"), null, new Response.Listener<JSONObject>() {
                                 @Override
