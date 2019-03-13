@@ -3,6 +3,7 @@ package com.team3313.frcscoutingapp.fragments;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,7 @@ public class TeamDataFragment extends TeamFragment {
         linearLayout.addView(buttonRow);
 
         GridLayout grid = new GridLayout(getContext());
+        Log.i("AIRROR", teamStats.names().toString());
         Iterator<String> keys = teamStats.keys();
         int row = 0;
         while (keys.hasNext()) {
