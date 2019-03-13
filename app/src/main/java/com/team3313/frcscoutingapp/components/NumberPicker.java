@@ -50,7 +50,7 @@ public class NumberPicker extends LinearLayout {
 
         dec = new Button(context);
         dec.setText("-");
-        dec.setLayoutParams(new LinearLayout.LayoutParams(100, 150));
+        dec.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
         dec.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,12 +62,12 @@ public class NumberPicker extends LinearLayout {
         display = new TextView(context);
         display.setText("0");
         display.setGravity(Gravity.CENTER);
-        display.setLayoutParams(new LinearLayout.LayoutParams(100, 150));
+        display.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
         this.addView(display);
 
         inc = new Button(context);
         inc.setText("+");
-        inc.setLayoutParams(new LinearLayout.LayoutParams(100, 150));
+        inc.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
         inc.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
