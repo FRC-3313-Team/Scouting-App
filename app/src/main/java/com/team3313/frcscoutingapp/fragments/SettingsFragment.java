@@ -94,7 +94,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                         body, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
                         try {
                             DataStore.config.put("apiKey", response.get("token"));
                             DataStore.saveConfig();
@@ -142,7 +141,11 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DataStore.manualRefresh();
+                DataStore.manualRefresh(getContext());
+                try {
+                    spinner.setSelection(DataStore.config.getInt("station"));
+                } catch (JSONException e) {
+                }
             }
         });
         refreshRow.addView(refreshButton);

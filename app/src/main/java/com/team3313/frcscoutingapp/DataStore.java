@@ -94,7 +94,7 @@ public class DataStore {
         }
     }
 
-    public static void manualRefresh() {
+    public static void manualRefresh(final Context context) {
 
         new AsyncTask<String, Void, Void>() {
             @Override
@@ -115,7 +115,19 @@ public class DataStore {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
-                                        DataStore.config.put("regional", response.get("regional"));
+                                        if (DataStore.config.has("regional") && !DataStore.config.getString("regional").equals(response.getString("regional"))) {
+                                            //if we are changing regionals in this update
+                                            teamData = new JSONObject();
+                                            matchTable = HashBasedTable.create();
+                                            DataStore.config.put("regional", response.get("regional"));
+                                        }
+                                        char[] def = response.getString("defaultDriverStation").toCharArray();
+                                        int station = Integer.parseInt(String.valueOf(def[1])) - 1;
+                                        if (def[0] == 'b') {
+                                            station += 3;
+                                        }
+                                        DataStore.config.put("station", station);
+
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
