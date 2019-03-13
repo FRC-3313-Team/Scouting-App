@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 return DataStore.config.getString("regional");
             } catch (JSONException e) {
-                return "AIRROR";
+                return "ERROR LOADING REGIONAL - MANUAL REFRESH";
             }
         }
     }

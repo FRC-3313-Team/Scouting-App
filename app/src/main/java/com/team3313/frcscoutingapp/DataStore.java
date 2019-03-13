@@ -109,43 +109,7 @@ public class DataStore {
             @Override
             protected void onPostExecute(Void v) {
                 try {
-                    JsonObjectRequest statusRequest = new JsonObjectRequest
-                            (Request.Method.GET, DataStore.SERVER + "/api/device/status", null, new Response.Listener<JSONObject>() {
-
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    try {
-                                        if (DataStore.config.has("regional") && !DataStore.config.getString("regional").equals(response.getString("regional"))) {
-                                            //if we are changing regionals in this update
-                                            teamData = new JSONObject();
-                                            matchTable = HashBasedTable.create();
-                                            DataStore.config.put("regional", response.get("regional"));
-                                        }
-                                        char[] def = response.getString("defaultDriverStation").toCharArray();
-                                        int station = Integer.parseInt(String.valueOf(def[1])) - 1;
-                                        if (def[0] == 'b') {
-                                            station += 3;
-                                        }
-                                        DataStore.config.put("station", station);
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, null) {
-                        public Map<String, String> getHeaders() {
-
-                            Map<String, String> mHeaders = new ArrayMap<String, String>();
-                            try {
-                                mHeaders.put("device-token", DataStore.config.getString("apiKey"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            return mHeaders;
-                        }
-                    };
-                    MainActivity.myRequestQueue.add(statusRequest);
-                    JsonObjectRequest teamRequest = new JsonObjectRequest
+                    final JsonObjectRequest teamRequest = new JsonObjectRequest
                             (Request.Method.GET, DataStore.SERVER + "/api/scout/teams?regional=" + config.getString("regional"), null, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
@@ -197,10 +161,9 @@ public class DataStore {
                             return mHeaders;
                         }
                     };
-                    MainActivity.myRequestQueue.add(teamRequest);
 
 
-                    JsonObjectRequest matchRequest = new JsonObjectRequest
+                    final JsonObjectRequest matchRequest = new JsonObjectRequest
                             (Request.Method.GET, DataStore.SERVER + "/api/scout/matches?regional=" + config.getString("regional"), null, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
@@ -213,8 +176,6 @@ public class DataStore {
                                             JSONArray teams = match.getJSONArray("data");
                                             for (int j = 0; j < teams.length(); j++) {
                                                 JSONObject data = teams.getJSONObject(j);
-                                                if (data.getBoolean("scouted"))
-                                                    Log.i("AIRROR", "Found scouted match: " + match.getString("match") + " for " + data.getString("team"));
                                                 data.put("match", match.getString("match"));
                                                 matchTable.put(match.getString("match"), teams.getJSONObject(j).getString("position"), data);
                                             }
@@ -236,7 +197,46 @@ public class DataStore {
                             return mHeaders;
                         }
                     };
-                    MainActivity.myRequestQueue.add(matchRequest);
+
+                    JsonObjectRequest statusRequest = new JsonObjectRequest
+                            (Request.Method.GET, DataStore.SERVER + "/api/device/status", null, new Response.Listener<JSONObject>() {
+
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    try {
+                                        if (DataStore.config.has("regional") && !DataStore.config.getString("regional").equals(response.getString("regional"))) {
+                                            //if we are changing regionals in this update
+                                            teamData = new JSONObject();
+                                            matchTable = HashBasedTable.create();
+                                            DataStore.config.put("regional", response.get("regional"));
+                                        }
+                                        char[] def = response.getString("defaultDriverStation").toCharArray();
+                                        int station = Integer.parseInt(String.valueOf(def[1])) - 1;
+                                        if (def[0] == 'b') {
+                                            station += 3;
+                                        }
+                                        DataStore.config.put("station", station);
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    MainActivity.myRequestQueue.add(matchRequest);
+                                    MainActivity.myRequestQueue.add(teamRequest);
+
+                                }
+                            }, null) {
+                        public Map<String, String> getHeaders() {
+
+                            Map<String, String> mHeaders = new ArrayMap<String, String>();
+                            try {
+                                mHeaders.put("device-token", DataStore.config.getString("apiKey"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            return mHeaders;
+                        }
+                    };
+                    MainActivity.myRequestQueue.add(statusRequest);
                 } catch (Exception ex) {
 
                 }
