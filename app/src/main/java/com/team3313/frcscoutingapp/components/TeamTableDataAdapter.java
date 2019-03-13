@@ -25,6 +25,17 @@ public class TeamTableDataAdapter extends TableDataAdapter<JSONObject> {
         super(context, data);
     }
 
+    public static double getOverallScore(JSONObject team) throws JSONException {
+        return 0
+                + 200 * team.getDouble("autoScale")
+                + 75 * team.getDouble("climb")
+                + 23 * team.getDouble("autoSwitch")
+                + 10.87 * team.getDouble("scale")
+                + 9.82 * team.getDouble("exchange")
+                + 5.6 * team.getDouble("switch")
+                + 5.4 * team.getDouble("cross");
+    }
+
     @Override
     public View getCellView(int rowIndex, int columnIndex, ViewGroup parentView) {
         final JSONObject team = getRowData(rowIndex);
@@ -67,18 +78,6 @@ public class TeamTableDataAdapter extends TableDataAdapter<JSONObject> {
         }
         return view;
     }
-
-    public static double getOverallScore(JSONObject team) throws JSONException {
-        return 0
-                + 200 * team.getDouble("autoScale")
-                + 75 * team.getDouble("climb")
-                + 23 * team.getDouble("autoSwitch")
-                + 10.87 * team.getDouble("scale")
-                + 9.82 * team.getDouble("exchange")
-                + 5.6 * team.getDouble("switch")
-                + 5.4 * team.getDouble("cross");
-    }
-
 
     private TextView renderTeamNumber(JSONObject team) {
         TextView view = new TextView(getContext());

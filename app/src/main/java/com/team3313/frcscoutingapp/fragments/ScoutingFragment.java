@@ -2,9 +2,6 @@ package com.team3313.frcscoutingapp.fragments;
 
 import android.support.v4.app.Fragment;
 
-import com.team3313.frcscoutingapp.DataStore;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**

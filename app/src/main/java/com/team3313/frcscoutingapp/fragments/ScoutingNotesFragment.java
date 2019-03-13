@@ -21,9 +21,8 @@ import org.json.JSONObject;
  */
 public class ScoutingNotesFragment extends ScoutingFragment {
 
-    LinearLayout linearLayout;
     public EditText editText;
-
+    LinearLayout linearLayout;
 
     /**
      * Use this factory method to create a new instance of

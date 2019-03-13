@@ -77,13 +77,12 @@ public class NumberPicker extends LinearLayout {
         this.addView(inc);
     }
 
+    public Integer getValue() {
+        return value;
+    }
 
     public void setValue(int value) {
         this.value = value;
         display.setText(String.valueOf(this.value));
-    }
-
-    public Integer getValue() {
-        return value;
     }
 }

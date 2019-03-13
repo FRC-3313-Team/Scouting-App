@@ -20,9 +20,13 @@ import android.widget.TextView;
 import com.team3313.frcscoutingapp.DataStore;
 import com.team3313.frcscoutingapp.MainActivity;
 import com.team3313.frcscoutingapp.R;
-import com.team3313.frcscoutingapp.components.TextViewExtra;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class TeamListFragment extends Fragment {
@@ -45,9 +49,24 @@ public class TeamListFragment extends Fragment {
         topLayout = new LinearLayout(getContext());
 
         TableLayout tableLayout = new TableLayout(getContext());
-        DataStore.teamData.length();
         int r = (int) Math.ceil(DataStore.teamData.length() / COLUMNS);
-        JSONArray names = DataStore.teamData.names();
+        ArrayList<String> names = new ArrayList<>();
+        JSONArray arr = DataStore.teamData.names();
+        for (int i = 0; i < arr.length(); i++) {
+            try {
+                names.add(arr.getString(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        Collections.sort(names, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return Integer.parseInt(o1.substring(3)) - Integer.parseInt(o2.substring(3));
+            }
+        });
+
+
         for (int i = 0; i < COLUMNS; i++) {
             tableLayout.setColumnStretchable(i, true);
         }
@@ -58,7 +77,7 @@ public class TeamListFragment extends Fragment {
                 try {
                     TextView view = new TextView(getContext());
                     view.setTextSize(25);
-                    view.setText(DataStore.teamData.getJSONObject(names.getString(i * COLUMNS + c)).getString("key").substring(3));
+                    view.setText(names.get(i * COLUMNS + c).substring(3));
                     view.setMinHeight(50);
                     view.setGravity(Gravity.CENTER);
                     int color = Color.WHITE;

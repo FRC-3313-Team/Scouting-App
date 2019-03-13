@@ -3,7 +3,6 @@ package com.team3313.frcscoutingapp.components;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,9 +97,9 @@ class MatchListTableDataAdapter extends TableDataAdapter<JSONObject> {
                 break;
             case 6:
                 try {
-                    String team = DataStore.matchTable.get(match.getString("key"), "b2").getString("team");
+                    String team = DataStore.matchTable.get(match.getString("key"), "b3").getString("team");
                     renderedView.setText(team.substring(3));
-                    if (DataStore.matchTable.get(match.getString("key"), "b2").getBoolean("scouted")) {
+                    if (DataStore.matchTable.get(match.getString("key"), "b3").getBoolean("scouted")) {
                         renderedView.setTypeface(null, Typeface.BOLD_ITALIC);
                     }
                 } catch (JSONException e) {

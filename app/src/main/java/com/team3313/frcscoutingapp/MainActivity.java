@@ -38,6 +38,7 @@ import org.json.JSONException;
 public class MainActivity extends AppCompatActivity {
     public static String regional;
     public static MainActivity instance;
+    public static RequestQueue myRequestQueue;
     Toolbar toolbar;
     android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
     private int mInterval = 5000; // 15 seconds by default, can be changed later
@@ -67,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    public static RequestQueue myRequestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,14 +249,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String getActiveRegional(boolean humanReadable) {
-        if (humanReadable) {
-            return "Great Northern Regional 2018";
-        } else {
-            try {
-                return DataStore.config.getString("regional");
-            } catch (JSONException e) {
-                return "ERROR LOADING REGIONAL - MANUAL REFRESH";
-            }
+        try {
+            return DataStore.config.getString("regional");
+        } catch (JSONException e) {
+            return "ERROR LOADING REGIONAL - MANUAL REFRESH";
         }
     }
 

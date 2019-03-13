@@ -28,9 +28,9 @@ import java.util.Iterator;
  */
 public class TeamDataFragment extends TeamFragment {
     private static final String ARG_TEAM_KEY = "frc3313";
+    private static int COLUMNS = 4;
     LinearLayout linearLayout;
     TableLayout tableLayout;
-    private static int COLUMNS = 4;
 
 
     public TeamDataFragment() {

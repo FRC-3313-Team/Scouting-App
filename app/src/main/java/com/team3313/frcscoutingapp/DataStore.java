@@ -168,6 +168,7 @@ public class DataStore {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
+                                        Log.e("AIRROR", response.toString());
                                         JSONArray matches = response.getJSONArray("matches");
 
 
@@ -204,12 +205,10 @@ public class DataStore {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
-                                        if (DataStore.config.has("regional") && !DataStore.config.getString("regional").equals(response.getString("regional"))) {
-                                            //if we are changing regionals in this update
-                                            teamData = new JSONObject();
-                                            matchTable = HashBasedTable.create();
-                                            DataStore.config.put("regional", response.get("regional"));
-                                        }
+                                        teamData = new JSONObject();
+                                        matchTable = HashBasedTable.create();
+                                        DataStore.config.put("regional", response.get("regional"));
+                                        
                                         char[] def = response.getString("defaultDriverStation").toCharArray();
                                         int station = Integer.parseInt(String.valueOf(def[1])) - 1;
                                         if (def[0] == 'b') {
@@ -299,7 +298,7 @@ public class DataStore {
     }
 
     @NonNull
-    private static JSONArray sortJsonArray(JSONArray array, final String field) throws JSONException {
+    public static JSONArray sortJsonArray(JSONArray array, final String field) throws JSONException {
         List<JSONObject> jsons = new ArrayList<JSONObject>();
         for (int i = 0; i < array.length(); i++) {
             jsons.add(array.getJSONObject(i));
