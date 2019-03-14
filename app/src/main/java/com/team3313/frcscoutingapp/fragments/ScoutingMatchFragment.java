@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.Space;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -28,11 +29,12 @@ import org.json.JSONObject;
  */
 public class ScoutingMatchFragment extends ScoutingFragment {
 
-    public CheckBox autoMoveBox, defenseBox;
+    public CheckBox autoMoveBox, defenseBox, autoHatch, autoCargo;
     public Spinner habStart, habEnd;
     public NumberPicker
             rocketTopCargo, rocketMidCargo, rocketBotCargo, podCargo,
             rocketTopHatch, rocketMidHatch, rocketBotHatch, podHatch;
+    public Space space;
 
     LinearLayout linearLayout;
     LinearLayout buttonRow;
@@ -64,7 +66,8 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
         buttonRow = new MatchButtons(getContext(), this);
         linearLayout.addView(buttonRow);
-
+        space = new Space(getContext());
+        space.setLayoutParams(new LinearLayout.LayoutParams(25, 0));
         //Auto data
         LinearLayout autoRow = new LinearLayout(getContext());
         autoRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -75,6 +78,30 @@ public class ScoutingMatchFragment extends ScoutingFragment {
 
         autoMoveBox = new CheckBox(getContext());
         autoRow.addView(autoMoveBox);
+
+        autoRow.addView(space);
+
+        TextView aCargo = new TextView(getContext());
+        aCargo.setText("Auto Cargo");
+        autoRow.addView(aCargo);
+
+        autoCargo = new CheckBox(getContext());
+        autoRow.addView(autoCargo);
+
+        space = new Space(getContext());
+        space.setLayoutParams(new LinearLayout.LayoutParams(25, 0));
+        autoRow.addView(space);
+
+        TextView aHatch = new TextView(getContext());
+        aHatch.setText("Auto  Hatch");
+        autoRow.addView(aHatch);
+
+        autoHatch = new CheckBox(getContext());
+        autoRow.addView(autoHatch);
+
+        space = new Space(getContext());
+        space.setLayoutParams(new LinearLayout.LayoutParams(25, 0));
+        autoRow.addView(space);
 
         TextView habStartLabel = new TextView(getContext());
         habStartLabel.setText("Start Level");
@@ -156,6 +183,9 @@ public class ScoutingMatchFragment extends ScoutingFragment {
                 GridLayout.spec(4, 1));
         grid.addView(podHatch, gridParams);
 
+        TextView cRock = new TextView(getContext());
+
+
 
         linearLayout.addView(grid);
 
@@ -193,6 +223,8 @@ public class ScoutingMatchFragment extends ScoutingFragment {
             JSONArray rocketHatch = matchData.getJSONObject("rocket").getJSONArray("hatch");
             JSONArray rocketCargo = matchData.getJSONObject("rocket").getJSONArray("cargo");
             autoMoveBox.setChecked(auto.getBoolean("movement"));
+            autoHatch.setChecked(auto.getBoolean("hatch"));
+            autoCargo.setChecked(auto.getBoolean("cargo"));
             habStart.setSelection(hab.getInt("start"));
             habEnd.setSelection(hab.getInt("end"));
             rocketTopCargo.setValue(rocketCargo.getInt(0));

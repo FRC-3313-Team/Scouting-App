@@ -104,8 +104,8 @@ public class MatchButtons extends LinearLayout {
             JSONObject rocket = new JSONObject();
             JSONObject pod = new JSONObject();
 
-            auto.put("hatch", false);
-            auto.put("cargo", false);
+            auto.put("hatch", sm.autoHatch.isChecked());
+            auto.put("cargo", sm.autoCargo.isChecked());
             auto.put("movement", sm.autoMoveBox.isChecked());
 
             hab.put("start", sm.habStart.getSelectedItemPosition());

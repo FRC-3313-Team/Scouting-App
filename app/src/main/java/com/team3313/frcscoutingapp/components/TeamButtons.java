@@ -87,7 +87,7 @@ public class TeamButtons extends LinearLayout {
                         JSONObject pit = new JSONObject();
 
                         try {
-                            pit = DataStore.teamData.getJSONObject(frag.teamKey).getJSONObject("pit");
+                            pit = DataStore.teamData.getJSONObject(frag.teamKey).getJSONObject("data");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -96,7 +96,6 @@ public class TeamButtons extends LinearLayout {
                         awards.put("flowers", frag.flowersBox.isChecked());
                         awards.put("deans", frag.deansBox.isChecked());
                         awards.put("safety", frag.safetyBox.isChecked());
-                        awards.put("entrepreneurship", frag.entrepreneurshipBox.isChecked());
                         pit.put("awards", awards);
                         JSONArray social = new JSONArray();
                         for (TableRow r : frag.socialRows) {
@@ -112,7 +111,7 @@ public class TeamButtons extends LinearLayout {
                         pit.put("social", social);
                         pit.put("outreach", frag.outreach.getText());
                         pit.put("updated", true);
-                        DataStore.teamData.getJSONObject(frag.teamKey).put("pit", pit);
+                        DataStore.teamData.getJSONObject(frag.teamKey).put("data", pit);
                         System.out.println("Saving award data");
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -35,7 +35,6 @@ public class TeamPRFragment extends TeamFragment {
     public CheckBox flowersBox;
     public CheckBox chairmansBox;
     public CheckBox safetyBox;
-    public CheckBox entrepreneurshipBox;
     public CheckBox deansBox;
     public ArrayList<TableRow> socialRows = new ArrayList();
     public EditText outreach;
@@ -78,7 +77,7 @@ public class TeamPRFragment extends TeamFragment {
         JSONObject teamData = new JSONObject();
         scroller = new ScrollView(getContext());
         try {
-            teamData = DataStore.teamData.getJSONObject(teamKey).getJSONObject("pit");
+            teamData = DataStore.teamData.getJSONObject(teamKey).getJSONObject("data");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -130,19 +129,6 @@ public class TeamPRFragment extends TeamFragment {
         }
         deansRow.addView(deansBox);
         awards.addView(deansRow);
-
-
-        TableRow entrepreneurshipRow = new TableRow(getContext());
-        TextView entrepreneurshipText = new TextView(getContext());
-        entrepreneurshipText.setText("Entrepreneurship");
-        entrepreneurshipRow.addView(entrepreneurshipText);
-        entrepreneurshipBox = new CheckBox(getContext());
-        try {
-            entrepreneurshipBox.setChecked(teamData.getJSONObject("awards").getBoolean("entrepreneurship"));
-        } catch (Exception ex) {
-        }
-        entrepreneurshipRow.addView(entrepreneurshipBox);
-        awards.addView(entrepreneurshipRow);
 
 
         TableRow safetyRow = new TableRow(getContext());

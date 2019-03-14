@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.ArrayMap;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -17,6 +18,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.team3313.frcscoutingapp.fragments.SettingsFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,7 +96,7 @@ public class DataStore {
         }
     }
 
-    public static void manualRefresh(final Context context) {
+    public static void manualRefresh(final SettingsFragment context) {
 
         new AsyncTask<String, Void, Void>() {
             @Override
@@ -126,6 +128,7 @@ public class DataStore {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+                                    Toast.makeText(context.getContext(), "Refreshed team data", Toast.LENGTH_SHORT).show();
                                 }
                             }, new Response.ErrorListener() {
                                 @Override
@@ -181,6 +184,7 @@ public class DataStore {
                                                 matchTable.put(match.getString("match"), teams.getJSONObject(j).getString("position"), data);
                                             }
                                         }
+                                        Toast.makeText(context.getContext(), "Refreshed match data", Toast.LENGTH_SHORT).show();
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -208,13 +212,14 @@ public class DataStore {
                                         teamData = new JSONObject();
                                         matchTable = HashBasedTable.create();
                                         DataStore.config.put("regional", response.get("regional"));
-                                        
+
                                         char[] def = response.getString("defaultDriverStation").toCharArray();
                                         int station = Integer.parseInt(String.valueOf(def[1])) - 1;
                                         if (def[0] == 'b') {
                                             station += 3;
                                         }
                                         DataStore.config.put("station", station);
+                                        context.spinner.setSelection(DataStore.config.getInt("station"));
 
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -365,14 +370,34 @@ public class DataStore {
         final JSONArray names = teamData.names();
         for (int i = 0; i < names.length(); i++) {
             try {
-                if (teamData.getJSONObject(names.getString(i)).has("pit")) {
-                    final JSONObject pit = teamData.getJSONObject(names.getString(i)).getJSONObject("pit");
+                if (teamData.getJSONObject(names.getString(i)).has("data")) {
+                    final JSONObject team = teamData.getJSONObject(names.getString(i));
+                    final JSONObject pit = team.getJSONObject("data");
 
-                    System.out.println("found pit data for " + names.getString(i) + ":" + pit.names());
-                    if (pit.getBoolean("updated")) {
-                        JSONObject pitUpload = new JSONObject(pit.toString());
+                    /*
+                       Basically, upload something similar to this: https://github.com/FRC-3313-Team/scouting-back/blob/master/API.md#example-body-4
+                       I think you should be able to rename pit to data and change key to team
+                       That's about all I can say :(
+
+                       The data property isn't validated at all so feel free to modify it to whatever you want
+                       Only the data property is saved by the server, everything else is trashed
+
+                       If you need the charger for this laptop, knock on room 307
+                       - Martin
+                     */
+                    Log.e("AIRROR4", "found pit data for " + names.getString(i) + ":" + pit.toString());
+                    if (pit.has("updated") && pit.getBoolean("updated")) {
+
+                        JSONObject pitUpload = new JSONObject(team.toString());
                         pitUpload.remove("updated");
+                        pitUpload.remove("stats");
+                        pitUpload.put("type", "team");
+                        pitUpload.put("team", names.getString(i));
+
+                        Log.e("Airror5", pitUpload.toString());
                         toUpload.put(pitUpload);
+                    }else{
+                        Log.e("AIRROR","not updated for " + names.getString(i));
                     }
                 }
             } catch (JSONException e) {
@@ -384,6 +409,8 @@ public class DataStore {
                 e.printStackTrace();
             }
         }
+
+        Log.e("AIRROR6", toUpload.toString());
 
 
         JsonArrayRequest uploadChanges = new JsonArrayRequest(Request.Method.POST, DataStore.SERVER + "/api/scout/upload", toUpload,

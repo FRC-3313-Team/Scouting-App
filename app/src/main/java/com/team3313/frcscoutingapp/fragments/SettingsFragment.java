@@ -38,7 +38,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
     TableLayout tableLayout;
     ScrollView scrollView;
-    Spinner spinner;
+    public Spinner spinner;
     EditText apiKey;
 
     public SettingsFragment() {
@@ -141,11 +141,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DataStore.manualRefresh(getContext());
-                try {
-                    spinner.setSelection(DataStore.config.getInt("station"));
-                } catch (JSONException e) {
-                }
+                DataStore.manualRefresh(SettingsFragment.this);
             }
         });
         refreshRow.addView(refreshButton);
