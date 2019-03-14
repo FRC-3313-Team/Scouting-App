@@ -2,6 +2,7 @@ package com.team3313.frcscoutingapp.components;
 
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,24 +24,39 @@ import de.codecrafters.tableview.TableDataAdapter;
 public class TeamTableDataAdapter extends TableDataAdapter<JSONObject> {
     public TeamTableDataAdapter(Context context, JSONObject[] data) {
         super(context, data);
+
     }
 
     public static double getOverallScore(JSONObject team) throws JSONException {
-        return 0
-                + 200 * team.getDouble("autoScale")
-                + 75 * team.getDouble("climb")
-                + 23 * team.getDouble("autoSwitch")
-                + 10.87 * team.getDouble("scale")
-                + 9.82 * team.getDouble("exchange")
-                + 5.6 * team.getDouble("switch")
-                + 5.4 * team.getDouble("cross");
+        Log.e("AIRROR", team.toString());
+        return 3076.9 * (getValueOr0(team, "Average Hab End") - 1)
+                + 3333.3 * getValueOr0(team, "Average Rct. Hatch Top")
+                + 500 * getValueOr0(team, "Average Rct. Hatch Mid")
+                + 333.33 * getValueOr0(team, "Average Rct. Hatch Bot")
+                + 500 * getValueOr0(team, "Average Pod Hatches")
+                + 8000 * getValueOr0(team, "Average Rct. Cargo Top")
+                + 400 * getValueOr0(team, "Average Rct. Cargo Mid")
+                + 266.67 * getValueOr0(team, "Average Rct. Cargo Bot")
+                + 200 * getValueOr0(team, "Average Pod Cargo")
+                + 400 * getValueOr0(team, "Defensive Games %")
+                + 100 * (getValueOr0(team, "Average Hab Start") - 1)
+                + 21.053 * getValueOr0(team, "Auto Movement %")
+                + 266.67 * getValueOr0(team, "Auto Cargo %")
+                + 200 * getValueOr0(team, "Auto Hatch %");
+    }
+
+    private static double getValueOr0(JSONObject team, String name) {
+        try {
+            return team.getDouble(name);
+        } catch (JSONException e) {
+            return 0;
+        }
     }
 
     @Override
     public View getCellView(int rowIndex, int columnIndex, ViewGroup parentView) {
         final JSONObject team = getRowData(rowIndex);
         TextView renderedView = null;
-
         switch (columnIndex) {
             case 0:
                 renderedView = renderTeamNumber(team);
@@ -56,7 +72,7 @@ public class TeamTableDataAdapter extends TableDataAdapter<JSONObject> {
             public void onClick(View v) {
                 String number = null;
                 try {
-                    number = team.getString("number");
+                    number = team.getString("key");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -70,7 +86,7 @@ public class TeamTableDataAdapter extends TableDataAdapter<JSONObject> {
     private TextView renderOverall(JSONObject team) {
         TextView view = new TextView(getContext());
         try {
-            double score = (int) (getOverallScore(team) * 100);
+            double score = (int) (getOverallScore(team.getJSONObject("stats")) * 100);
 
             view.setText(score / 100 + "");
         } catch (JSONException e) {
@@ -82,7 +98,7 @@ public class TeamTableDataAdapter extends TableDataAdapter<JSONObject> {
     private TextView renderTeamNumber(JSONObject team) {
         TextView view = new TextView(getContext());
         try {
-            view.setText(team.getString("number").substring(3));
+            view.setText(team.getString("key").substring(3));
         } catch (JSONException e) {
         }
         return view;

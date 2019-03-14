@@ -65,8 +65,8 @@ public class RankingFragment extends Fragment {
         @Override
         public int compare(JSONObject o1, JSONObject o2) {
             try {
-                int first = Integer.decode(o1.getString("number").substring(3));
-                int second = Integer.decode(o2.getString("number").substring(3));
+                int first = Integer.decode(o1.getString("key").substring(3));
+                int second = Integer.decode(o2.getString("key").substring(3));
                 return first - second;
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -79,8 +79,8 @@ public class RankingFragment extends Fragment {
         @Override
         public int compare(JSONObject o1, JSONObject o2) {
             try {
-                double first = TeamTableDataAdapter.getOverallScore(o1);
-                double second = TeamTableDataAdapter.getOverallScore(o2);
+                double first = TeamTableDataAdapter.getOverallScore(o1.getJSONObject("stats"));
+                double second = TeamTableDataAdapter.getOverallScore(o2.getJSONObject("stats"));
                 return (int) (first * 100 - second * 100);
             } catch (JSONException e) {
                 e.printStackTrace();

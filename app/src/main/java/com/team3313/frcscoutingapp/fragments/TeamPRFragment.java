@@ -1,6 +1,7 @@
 package com.team3313.frcscoutingapp.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,7 @@ public class TeamPRFragment extends TeamFragment {
         scroller = new ScrollView(getContext());
         try {
             teamData = DataStore.teamData.getJSONObject(teamKey).getJSONObject("data");
+            Log.e("AIRROR7", teamData.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -147,6 +149,7 @@ public class TeamPRFragment extends TeamFragment {
         try {
             outreach.setText(teamData.getString("outreach"));
         } catch (Exception ex) {
+            ex.printStackTrace();
             outreach.setText("Creative Outreach Info");
         }
         outreach.setMinimumWidth(500);

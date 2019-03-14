@@ -373,18 +373,6 @@ public class DataStore {
                 if (teamData.getJSONObject(names.getString(i)).has("data")) {
                     final JSONObject team = teamData.getJSONObject(names.getString(i));
                     final JSONObject pit = team.getJSONObject("data");
-
-                    /*
-                       Basically, upload something similar to this: https://github.com/FRC-3313-Team/scouting-back/blob/master/API.md#example-body-4
-                       I think you should be able to rename pit to data and change key to team
-                       That's about all I can say :(
-
-                       The data property isn't validated at all so feel free to modify it to whatever you want
-                       Only the data property is saved by the server, everything else is trashed
-
-                       If you need the charger for this laptop, knock on room 307
-                       - Martin
-                     */
                     Log.e("AIRROR4", "found pit data for " + names.getString(i) + ":" + pit.toString());
                     if (pit.has("updated") && pit.getBoolean("updated")) {
 
