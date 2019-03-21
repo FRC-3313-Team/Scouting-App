@@ -16,10 +16,7 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.renderer.XAxisRenderer;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.team3313.frcscoutingapp.DataStore;
 import com.team3313.frcscoutingapp.MainActivity;
 import com.team3313.frcscoutingapp.components.TeamButtons;
@@ -29,7 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -118,12 +114,12 @@ public class TeamDataFragment extends TeamFragment {
                             JSONArray arr = (JSONArray) o;
 
                             HashMap<Double, Integer> map = new HashMap<>();
+                            map.put((double) 0, 0);
+                            map.put((double) 1, 0);
+                            map.put((double) 2, 0);
+                            map.put((double) 3, 0);
                             for (int j = 0; j < arr.length(); j++) {
-                                if (map.containsKey(arr.getDouble(j))) {
-                                    map.put(arr.getDouble(j), map.get(arr.getDouble(j)) + 1);
-                                } else {
-                                    map.put(arr.getDouble(j), 1);
-                                }
+                                map.put(arr.getDouble(j), map.get(arr.getDouble(j)) + 1);
                             }
                             final List<BarEntry> dataList = new ArrayList<>();
 
@@ -154,6 +150,7 @@ public class TeamDataFragment extends TeamFragment {
                                     return String.valueOf((int) value);
                                 }
                             });
+                            set.setLabel("");
 
                             BarData barData = new BarData(set);
 
@@ -162,6 +159,7 @@ public class TeamDataFragment extends TeamFragment {
                             chart.setMinimumHeight(150);
                             chart.setDrawMarkers(false);
                             chart.setDrawValueAboveBar(false);
+
                             chart.setDrawGridBackground(false);
                             Description desc = new Description();
                             desc.setText("");
