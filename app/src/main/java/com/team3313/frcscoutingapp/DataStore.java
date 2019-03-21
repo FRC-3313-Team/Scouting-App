@@ -384,8 +384,8 @@ public class DataStore {
 
                         Log.e("Airror5", pitUpload.toString());
                         toUpload.put(pitUpload);
-                    }else{
-                        Log.e("AIRROR","not updated for " + names.getString(i));
+                    } else {
+                        Log.e("AIRROR", "not updated for " + names.getString(i));
                     }
                 }
             } catch (JSONException e) {
@@ -494,6 +494,8 @@ public class DataStore {
             double pc = 0;
             double habs = 0;
             double habe = 0;
+            JSONArray habsA = new JSONArray();
+            JSONArray habeA = new JSONArray();
             double played = 0;
             for (JSONObject match : matchTable.values()) {
                 if (match.getString("team").equalsIgnoreCase(teamKey)) {
@@ -529,6 +531,9 @@ public class DataStore {
 
                     habs += hab.getInt("start");
                     habe += hab.getInt("end");
+
+                    habsA.put(hab.getInt("start"));
+                    habeA.put(hab.getInt("end"));
                 }
             }
             teamStats.put("Played Matches", played);
@@ -548,6 +553,8 @@ public class DataStore {
             teamStats.put("Average Pod Hatches", ph / played);
             teamStats.put("Average Hab Start", habs / played);
             teamStats.put("Average Hab End", habe / played);
+            teamStats.put("Hab Start Levels", habsA);
+            teamStats.put("Hab End Levels", habeA);
             teamStats.put("Defensive Games %", def / played);
 
             teamData.getJSONObject(teamKey).put("stats", teamStats);
