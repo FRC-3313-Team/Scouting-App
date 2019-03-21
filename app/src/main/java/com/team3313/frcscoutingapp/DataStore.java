@@ -552,8 +552,8 @@ public class DataStore {
             teamStats.put("Average Rct. Hatch Bot", rhb / played);
             teamStats.put("Average Pod Hatches", ph / played);
             teamStats.put("Average Hab Start", habs / played);
-            teamStats.put("Average Hab End", habe / played);
             teamStats.put("Hab Start Levels", habsA);
+            teamStats.put("Average Hab End", habe / played);
             teamStats.put("Hab End Levels", habeA);
             teamStats.put("Defensive Games %", def / played);
 

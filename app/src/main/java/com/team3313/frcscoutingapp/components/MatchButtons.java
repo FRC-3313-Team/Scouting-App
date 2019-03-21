@@ -34,7 +34,7 @@ public class MatchButtons extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     try {
-                        sm.data.put("notes", sm.editText.getText());
+                        sm.data.getJSONObject("data").put("notes", sm.editText.getText());
                     } catch (JSONException e) {
                     }
                     FragmentManager fragmentManager = MainActivity.instance.getSupportFragmentManager();
@@ -74,7 +74,7 @@ public class MatchButtons extends LinearLayout {
                 } else if (fragment instanceof ScoutingNotesFragment) {
                     ScoutingNotesFragment sm = (ScoutingNotesFragment) fragment;
                     try {
-                        sm.data.put("notes", sm.editText.getText());
+                        sm.data.getJSONObject("data").put("notes", sm.editText.getText());
                     } catch (JSONException e) {
                     }
                 }
