@@ -29,20 +29,20 @@ public class TeamTableDataAdapter extends TableDataAdapter<JSONObject> {
 
     public static double getOverallScore(JSONObject team) throws JSONException {
         Log.e("AIRROR", team.toString());
-        return 3076.9 * (getValueOr0(team, "Average Hab End") - 1)
-                + 3333.3 * getValueOr0(team, "Average Rct. Hatch Top")
-                + 500 * getValueOr0(team, "Average Rct. Hatch Mid")
-                + 333.33 * getValueOr0(team, "Average Rct. Hatch Bot")
-                + 500 * getValueOr0(team, "Average Pod Hatches")
-                + 8000 * getValueOr0(team, "Average Rct. Cargo Top")
-                + 400 * getValueOr0(team, "Average Rct. Cargo Mid")
-                + 266.67 * getValueOr0(team, "Average Rct. Cargo Bot")
-                + 200 * getValueOr0(team, "Average Pod Cargo")
-                + 400 * getValueOr0(team, "Defensive Games %")
+        return 769.231 * (getValueOr0(team, "Average Hab End") - 1)
+                + 106.667 * getValueOr0(team, "Average Rct. Hatch Top")
+                + 106.667 * getValueOr0(team, "Average Rct. Hatch Mid")
+                + 106.667 * getValueOr0(team, "Average Rct. Hatch Bot")
+                + 106.667 * getValueOr0(team, "Average Pod Hatches")
+                + 59.406 * getValueOr0(team, "Average Rct. Cargo Top")
+                + 59.406 * getValueOr0(team, "Average Rct. Cargo Mid")
+                + 59.406 * getValueOr0(team, "Average Rct. Cargo Bot")
+                + 59.406 * getValueOr0(team, "Average Pod Cargo")
+                + 300 * getValueOr0(team, "Defensive Games %")
                 + 100 * (getValueOr0(team, "Average Hab Start") - 1)
-                + 21.053 * getValueOr0(team, "Auto Movement %")
+                + 78.974 * getValueOr0(team, "Auto Movement %")
                 + 266.67 * getValueOr0(team, "Auto Cargo %")
-                + 200 * getValueOr0(team, "Auto Hatch %");
+                + 106.667 * getValueOr0(team, "Auto Hatch %");
     }
 
     private static double getValueOr0(JSONObject team, String name) {
